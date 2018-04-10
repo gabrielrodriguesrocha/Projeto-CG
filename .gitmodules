@@ -1,24 +1,24 @@
 [submodule "Dist/Vendor/assimp"]
-    path = Dist/Vendor/assimp
-    url = https://github.com/assimp/assimp.git
+	path = Dist/Vendor/assimp
+	url = https://github.com/assimp/assimp.git
     branch = master
 [submodule "Dist/Vendor/glad"]
-    path = Dist/Vendor/glad
-    url = https://github.com/Dav1dde/glad.git
+	path = Dist/Vendor/glad
+	url = https://github.com/Dav1dde/glad.git
     branch = c
 [submodule "Dist/Vendor/glfw"]
-    path = Dist/Vendor/glfw
-    url = https://github.com/glfw/glfw.git
+	path = Dist/Vendor/glfw
+	url = https://github.com/glfw/glfw.git
     branch = master
 [submodule "Dist/Vendor/glm"]
-    path = Dist/Vendor/glm
-    url = https://github.com/g-truc/glm.git
+	path = Dist/Vendor/glm
+	url = https://github.com/g-truc/glm.git
     branch = master
 [submodule "Dist/Vendor/stb"]
-    path = Dist/Vendor/stb
-    url = https://github.com/nothings/stb.git
+	path = Dist/Vendor/stb
+	url = https://github.com/nothings/stb.git
     branch = master
 [submodule "Dist/Vendor/bullet"]
-    path = Dist/Vendor/bullet
-    url = https://github.com/bulletphysics/bullet3.git
+	path = Dist/Vendor/bullet
+	url = https://github.com/bulletphysics/bullet3.git
     branch = master
