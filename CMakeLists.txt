@@ -28,6 +28,7 @@ else()
 endif()
 
 include_directories(Dist/Headers/
+                    Build/Dist/Vendor/assimp/include # For some reason, CMake is putting config.h in this directory
                     Dist/Vendor/assimp/include/
                     Dist/Vendor/bullet/src/
                     Dist/Vendor/glad/include/
