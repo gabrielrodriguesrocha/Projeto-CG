@@ -22,7 +22,7 @@ namespace Mirage
     Shader & Shader::attach(std::string const & filename)
     {
         // Load GLSL Shader Source from File
-        std::string path = PROJECT_SOURCE_DIR "/Glitter/Shaders/";
+        std::string path = PROJECT_SOURCE_DIR "/Dist/Shaders/";
         std::ifstream fd(path + filename);
         auto src = std::string(std::istreambuf_iterator<char>(fd),
                               (std::istreambuf_iterator<char>()));
