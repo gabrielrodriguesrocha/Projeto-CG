@@ -15,7 +15,7 @@ namespace Mirage
         // Load a Model from File
         Assimp::Importer loader;
         aiScene const * scene = loader.ReadFile(
-            PROJECT_SOURCE_DIR "/Mirage/Models/" + filename,
+            PROJECT_SOURCE_DIR "/Dist/Models/" + filename,
             aiProcessPreset_TargetRealtime_MaxQuality |
             aiProcess_OptimizeGraph                   |
             aiProcess_FlipUVs);
@@ -68,7 +68,7 @@ namespace Mirage
     void Mesh::draw(GLuint shader)
     {
         unsigned int unit = 0, diffuse = 0, specular = 0;
-        for (auto &i : mSubMeshes) i->draw(shader);
+		for (auto &i : mSubMeshes) i->draw(shader);
         for (auto &i : mTextures)
         {   // Set Correct Uniform Names Using Texture Type (Omit ID for 0th Texture)
             std::string uniform = i.second;
@@ -103,11 +103,15 @@ namespace Mirage
             vertices.push_back(vertex);
         }
 
+		printf("Vertex data created\n");
+
         // Create Mesh Indices for Indexed Drawing
         std::vector<GLuint> indices;
         for (unsigned int i = 0; i < mesh->mNumFaces; i++)
         for (unsigned int j = 0; j < mesh->mFaces[i].mNumIndices; j++)
             indices.push_back(mesh->mFaces[i].mIndices[j]);
+
+		printf("Vertices indexed\n");
 
         // Load Mesh Textures into VRAM
         std::map<GLuint, std::string> textures;
@@ -118,6 +122,8 @@ namespace Mirage
 
         // Create New Mesh Node
         mSubMeshes.push_back(std::unique_ptr<Mesh>(new Mesh(vertices, indices, textures)));
+
+		printf("Mesh created\n");
     }
 
     std::map<GLuint, std::string> Mesh::process(std::string const & path,
@@ -135,7 +141,7 @@ namespace Mirage
             // Load the Texture Image from File
             aiString str; material->GetTexture(type, i, & str);
             std::string filename = str.C_Str(); int width, height, channels;
-            filename = PROJECT_SOURCE_DIR "/Mirage/Models/" + path + "/" + filename;
+            filename = PROJECT_SOURCE_DIR "/Dist/Models/" + path + "/" + filename;
             unsigned char * image = stbi_load(filename.c_str(), & width, & height, & channels, 0);
             if (!image) fprintf(stderr, "%s %s\n", "Failed to Load Texture", filename.c_str());
 

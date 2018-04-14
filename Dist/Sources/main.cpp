@@ -1,6 +1,7 @@
 // Local Headers
 #include "glitter.hpp"
 #include "shader.hpp"
+#include "mesh.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -11,13 +12,16 @@
 #include <cstdlib>
 
 // Object Vertices
+
 float vertices[] = {
-	-0.5f, -0.5f, 0.0f,
-	0.5f, -0.5f, 0.0f,
-	0.0f,  0.5f, 0.0f
+	// positions         // colors
+	0.5f, 0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
+	0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
+	-0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
 };
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void processInput(GLFWwindow *window);
 
 int main(int argc, char * argv[]) {
 
@@ -45,48 +49,57 @@ int main(int argc, char * argv[]) {
     fprintf(stderr, "OpenGL %s\n", glGetString(GL_VERSION));
 	glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
 
-	// Creating and Binding the Vertex Array Object (VAO)
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	// Creating and Binding the Vertex Buffer Object (VBO)
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	// Copy User Data Into Buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	// Set Vertex Attribute Pointers
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
 	// Build and Compile Shaders
 	// -------------
 	Mirage::Shader shader;
 	shader.attach("main.vert").attach("main.frag");
 	shader.link();
-	shader.activate();
+	//shader.activate();
+
+	Mirage::Mesh mesh("bunny.obj");
+
 
     // Rendering Loop
     while (glfwWindowShouldClose(mWindow) == false) {
-        if (glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-            glfwSetWindowShouldClose(mWindow, true);
+		processInput(mWindow);
 
         // Background Fill Color
         glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 		
 		shader.activate();
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		glm::mat4 model;
+		model = glm::scale(model, glm::vec3(0.1f));
+
+		glm::mat4 view (1.0f);
+		view = glm::scale(view, glm::vec3(0.05f));
+
+		glm::mat4 projection;
+		projection = glm::perspective(glm::radians(45.0f), (float) mWidth / mHeight, 0.1f, 100.0f);
+
+		int modelLoc = glGetUniformLocation(shader.get(), "model");
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+		int viewLoc = glGetUniformLocation(shader.get(), "view");
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+		int projectionLoc = glGetUniformLocation(shader.get(), "projection");
+		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+		mesh.draw(shader.get());
 
         // Flip Buffers and Draw
         glfwSwapBuffers(mWindow);
         glfwPollEvents();
     }   glfwTerminate();
     return EXIT_SUCCESS;
+}
+
+void processInput(GLFWwindow *window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
