@@ -1,15 +1,15 @@
 CXX=g++
 LFLAGS=-L Local/glad/include -L Local/stb
 INCLUDES=-I Dist/Headers -I Local/glad/include -I Local/stb
-CFLAGS=-c -Wall -D PROJECT_SOURCE_DIR=\"$(shell pwd)\"
-LIBS=-lassimp -lglfw -lGL -lm -lglad -lstb_image
-#DEPS=glitter.hpp mesh.hpp shader.hpp
+CFLAGS=-Wall -D PROJECT_SOURCE_DIR=\"$(shell pwd)\"
+LIBS=-lassimp -lglfw -lGL -lm -ldl 
 SRCDIR=Dist/Sources/
-SOURCES=$(addprefix $(SRCDIR), main.cpp mesh.cpp shader.cpp)
-OBJECTS=$(SOURCES:.cpp=.o)
+GLADSRC=Local/glad/src/
+SOURCES=$(addprefix $(SRCDIR), main.cpp mesh.cpp shader.cpp) $(addprefix $(GLADSRC), glad.c)
+OBJECTS=$(SOURCES:.cpp=.o) 
 MAIN=prog
 
-all:
+all: 
 	$(MAIN)
 
 $(MAIN): $(OBJECTS)
