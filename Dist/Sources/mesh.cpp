@@ -44,12 +44,20 @@ namespace Mirage
                      mVertices.size() * sizeof(Vertex),
                    & mVertices.front(), GL_STATIC_DRAW);
 
+		for (unsigned int i = 0; i < mVertices.size(); i++) {
+			printf("%f %f %f\n", mVertices[i].position.x, mVertices[i].position.y, mVertices[i].position.z);
+		}
+
         // Copy Index Buffer Data
         glGenBuffers(1, & mElementBuffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mElementBuffer);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                      mIndices.size() * sizeof(GLuint),
                    & mIndices.front(), GL_STATIC_DRAW);
+
+		for (unsigned int i = 0; i < mIndices.size(); i++) {
+			printf("%d\n", mIndices[i]);
+		}
 
         // Set Shader Attributes
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *) offsetof(Vertex, position));
@@ -63,6 +71,8 @@ namespace Mirage
         glBindVertexArray(0);
         glDeleteBuffers(1, & mVertexBuffer);
         glDeleteBuffers(1, & mElementBuffer);
+
+		printf("Done!\n");
     }
 
     void Mesh::draw(GLuint shader)
@@ -79,8 +89,10 @@ namespace Mirage
             glActiveTexture(GL_TEXTURE0 + unit);
             glBindTexture(GL_TEXTURE_2D, i.first);
             glUniform1f(glGetUniformLocation(shader, uniform.c_str()), ++unit);
-        }   glBindVertexArray(mVertexArray);
+		}
+			glBindVertexArray(mVertexArray);
             glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
     }
 
     void Mesh::parse(std::string const & path, aiNode const * node, aiScene const * scene)
@@ -103,13 +115,13 @@ namespace Mirage
             vertices.push_back(vertex);
         }
 
-		printf("Vertex data created\n");
-
         // Create Mesh Indices for Indexed Drawing
         std::vector<GLuint> indices;
         for (unsigned int i = 0; i < mesh->mNumFaces; i++)
         for (unsigned int j = 0; j < mesh->mFaces[i].mNumIndices; j++)
             indices.push_back(mesh->mFaces[i].mIndices[j]);
+
+		printf("%d\n", mesh->mNumFaces);
 
 		printf("Vertices indexed\n");
 
