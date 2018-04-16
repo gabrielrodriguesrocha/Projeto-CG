@@ -4,7 +4,7 @@
 #pragma once
 
 // System Headers
-#include <assimp/Importer.hpp>
+#include <assimp/importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <btBulletDynamicsCommon.h>
