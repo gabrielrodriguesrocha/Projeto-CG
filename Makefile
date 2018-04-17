@@ -7,12 +7,9 @@ SRCDIR=Dist/Sources/
 GLADSRC=Local/glad/src/
 SOURCES=$(addprefix $(SRCDIR), main.cpp mesh.cpp shader.cpp) $(addprefix $(GLADSRC), glad.c)
 OBJECTS=$(SOURCES:.cpp=.o) 
-MAIN=prog
+MAIN=Build/prog
 
-all: 
-	$(MAIN)
-
-$(MAIN): $(OBJECTS)
+all: $(OBJECTS) 
 	$(CXX) $(CFLAGS) $(INCLUDES) -o $(MAIN) $(OBJECTS) $(LFLAGS) $(LIBS)
 
 .cpp.o:
