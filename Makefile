@@ -19,7 +19,7 @@ $(MAIN): $(OBJECTS)
 	$(CXX) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
-	$(RM) $(addprefix $(SRCDIR), *.o) *~ $(MAIN)
+	$(RM) $(addprefix $(SRCDIR), *.o) $(addprefix $(GLADSRC), *.o) *~ $(MAIN)
 
 depend: $(SOURCES)
 	makedepend $(INCLUDES) $^
