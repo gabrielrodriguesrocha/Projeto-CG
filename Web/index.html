@@ -174,7 +174,7 @@
  
       var modelMatrix = mat4.create();
       mat4.identity(modelMatrix);
-      mat4.translate(modelMatrix, modelMatrix, [0, -0.1, -0.5]);
+      mat4.translate(modelMatrix, modelMatrix, [0, 0, -4]);
       program.modelMatrixUniform = gl.getUniformLocation(
         program, 'modelMatrix');
       gl.uniformMatrix4fv(
@@ -305,7 +305,7 @@
     }
  
     $(document).ready(function() {
-      loadMesh('bunny.obj')
+      loadMesh('monkey.obj')
     });
  
     </script>
