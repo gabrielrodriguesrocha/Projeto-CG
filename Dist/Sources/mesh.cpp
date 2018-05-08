@@ -7,6 +7,8 @@
 // System Headers
 #include <stb_image.h>
 
+
+
 // Define Namespace
 namespace Mirage
 {
@@ -95,6 +97,13 @@ namespace Mirage
 
     void Mesh::parse(std::string const & path, aiMesh const * mesh, aiScene const * scene)
     {
+        Point max, min; 
+        max.x= mesh->mVertices[0].x;
+        max.y = mesh->mVertices[0].y;
+        max.z = mesh->mVertices[0].z;
+        min.x= mesh->mVertices[0].x;
+        min.y = mesh->mVertices[0].y;
+        min.z = mesh->mVertices[0].z;   
         // Create Vertex Data from Mesh Node
         std::vector<Vertex> vertices; Vertex vertex;
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -103,7 +112,32 @@ namespace Mirage
             vertex.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
             vertex.normal   = glm::vec3(mesh->mNormals[i].x,  mesh->mNormals[i].y,  mesh->mNormals[i].z);
             vertices.push_back(vertex);
+            //max
+            if(mesh->mVertices[i].x > max.x){
+                max.x = mesh->mVertices[i].x;
+            }
+            if(mesh->mVertices[i].y > max.y){
+                max.y = mesh->mVertices[i].y;
+            }
+            if(mesh->mVertices[i].z > max.z){
+                max.z = mesh->mVertices[i].z;
+            }
+
+            //min
+            if(mesh->mVertices[i].x < min.x){
+                min.x = mesh->mVertices[i].x;
+            }
+            if(mesh->mVertices[i].y < min.y){
+                min.y = mesh->mVertices[i].y;
+            }
+            if(mesh->mVertices[i].z < min.z){
+                min.z = mesh->mVertices[i].z;
+            }
+
         }
+        center.x = (max.x - min.x) / 2;
+        center.y = (max.y - min.y) / 2;
+        center.z = (max.z - min.z) / 2;
 
         // Create Mesh Indices for Indexed Drawing
         std::vector<GLuint> indices;
@@ -169,5 +203,8 @@ namespace Mirage
             else if (type == aiTextureType_SPECULAR) mode = "specular";
             textures.insert(std::make_pair(texture, mode));
         }   return textures;
+    }
+    Point Mesh::getCenter(){
+        return center;
     }
 };

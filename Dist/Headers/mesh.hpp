@@ -12,6 +12,9 @@
 #include <memory>
 #include <vector>
 
+
+
+
 // Define Namespace
 namespace Mirage
 {
@@ -21,6 +24,10 @@ namespace Mirage
         glm::vec3 normal;
         glm::vec2 uv;
     };
+
+    typedef struct point{
+	float x, y, z;
+    }Point;
 
     class Mesh
     {
@@ -38,6 +45,7 @@ namespace Mirage
 
         // Public Member Functions
         void draw(GLuint shader);
+	Point getCenter();
 
     private:
 
@@ -62,6 +70,9 @@ namespace Mirage
         GLuint mVertexArray;
         GLuint mVertexBuffer;
         GLuint mElementBuffer;
+	
+	//Private center
+	Point center;
 
     };
 };
