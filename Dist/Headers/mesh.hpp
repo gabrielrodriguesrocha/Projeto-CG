@@ -25,9 +25,9 @@ namespace Mirage
         glm::vec2 uv;
     };
 
-    typedef struct point{
-	float x, y, z;
-    }Point;
+    struct Point{
+	    float x, y, z;
+    };
 
     class Mesh
     {
@@ -45,7 +45,7 @@ namespace Mirage
 
         // Public Member Functions
         void draw(GLuint shader);
-	Point getCenter();
+	    Point getCenter();
 
     private:
 
@@ -71,8 +71,8 @@ namespace Mirage
         GLuint mVertexBuffer;
         GLuint mElementBuffer;
 	
-	//Private center
-	Point center;
+	    //Private center
+	    Point center;
 
     };
 };

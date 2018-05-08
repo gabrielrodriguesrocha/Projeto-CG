@@ -1,7 +1,7 @@
 // Local Headers
 #include "glitter.hpp"
 #include "shader.hpp"
-#include "mesh.hpp"
+#include "stormtrooper.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -48,10 +48,10 @@ int main(int argc, char * argv[]) {
 	shader.attach("main.vert").attach("main.frag");
 	shader.link();
 
-	Mirage::Mesh mesh("stormtrooper.obj");
-	printf("%0.2f %0.2f %0.2f\n", (mesh.getCenter()).x, (mesh.getCenter()).y, (mesh.getCenter()).z);
-	Mirage::Mesh mesh2("monkey.obj");
-	printf("%0.2f %0.2f %0.2f\n", (mesh2.getCenter()).x, (mesh2.getCenter()).y, (mesh2.getCenter()).z);
+	Mirage::Mesh stormtrooper("stormtrooper.obj");
+	printf("%0.2f %0.2f %0.2f\n", (stormtrooper.getCenter()).x, (stormtrooper.getCenter()).y, (stormtrooper.getCenter()).z);
+	Mirage::Mesh monkey("monkey.obj");
+	printf("%0.2f %0.2f %0.2f\n", (stormtrooper.getCenter()).x, (stormtrooper.getCenter()).y, (stormtrooper.getCenter()).z);
 
 
 	glEnable(GL_DEPTH_TEST);
@@ -70,24 +70,29 @@ int main(int argc, char * argv[]) {
 		
 		//newvalue = sin(param*M_PI/180)*10)
 		shader.activate();
-		glm::mat4 model, model2;
-		model = glm::translate(model, glm::vec3(-mesh.getCenter().x +(0.0f),-mesh.getCenter().y +(0.0f), -mesh.getCenter().z +(-5.0f)));
-		model2 = glm::translate(model2, glm::vec3(-mesh2.getCenter().x +(sin(param*M_PI/180)*4),-mesh2.getCenter().y +(0.0f), -mesh2.getCenter().z +((cos(param*M_PI/180)*4)-5.0f)));;
+
+		// Model Matrices
+		glm::mat4 modelStormtrooper, modelMonkey;
+		modelStormtrooper = glm::translate(modelStormtrooper, glm::vec3(-stormtrooper.getCenter().x +(0.0f),-stormtrooper.getCenter().y +(0.0f), -stormtrooper.getCenter().z +(-5.0f)));
+		modelMonkey = glm::translate(modelMonkey, glm::vec3(-monkey.getCenter().x +(sin(param*M_PI/180)*4),-monkey.getCenter().y +(0.0f), -monkey.getCenter().z +((cos(param*M_PI/180)*4)-5.0f)));;
 		
+		// View Matrices
 		glm::mat4 view;
 		view = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), // eye
 						   glm::vec3(0.0f, 0.0f, -3.0f), // center
 						   glm::vec3(0.0f, 1.0f, 0.0f));// up
 
+		// Projection Matrices
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(75.0f), (float) mWidth / mHeight, 0.1f, 100.0f);
 
+		// Normal Matrices
 		glm::mat3 normal, normal2;
-		normal = glm::inverse(glm::mat3(view * model)); 
-		normal2 = glm::inverse(glm::mat3(view * model2));
+		normal = glm::inverse(glm::mat3(view * modelStormtrooper)); 
+		normal2 = glm::inverse(glm::mat3(view * modelMonkey));
 
 		int modelLoc = glGetUniformLocation(shader.get(), "modelMatrix");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelStormtrooper));
 
 		int viewLoc = glGetUniformLocation(shader.get(), "viewMatrix");
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -123,15 +128,15 @@ int main(int argc, char * argv[]) {
 		glUniform1f(materialDiffuseU, diffuse);
 		glUniform1f(shininessU, shininess);
 
-		mesh.draw(shader.get());
+		stormtrooper.draw(shader.get());
 
 		modelLoc = glGetUniformLocation(shader.get(), "modelMatrix");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model2));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMonkey));
 
 		normalLoc = glGetUniformLocation(shader.get(), "normalMatrix");
 		glUniformMatrix3fv(normalLoc, 1, GL_TRUE, glm::value_ptr(normal2));
 
-		mesh2.draw(shader.get());
+		monkey.draw(shader.get());
 
         // Flip Buffers and Draw
         glfwSwapBuffers(mWindow);
