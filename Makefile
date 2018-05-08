@@ -1,7 +1,7 @@
 CXX=g++
 LFLAGS=-L Local/glad/include -L Local/stb
 INCLUDES=-I Dist/Headers -I Local/glad/include -I Local/stb -I /usr/include/bullet
-CFLAGS=-Wall -D PROJECT_SOURCE_DIR=\"$(shell pwd)\"
+CFLAGS=-std=c++11 -Wall -D PROJECT_SOURCE_DIR=\"$(shell pwd)\"
 LIBS=-lassimp -lglfw -lGL -lm -ldl -lBulletDynamics -lLinearMath 
 SRCDIR=Dist/Sources/
 GLADSRC=Local/glad/src/
