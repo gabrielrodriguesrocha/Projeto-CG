@@ -51,7 +51,7 @@ int main(int argc, char * argv[]) {
 	Mirage::Mesh stormtrooper("stormtrooper.obj");
 	printf("%0.2f %0.2f %0.2f\n", (stormtrooper.getCenter()).x, (stormtrooper.getCenter()).y, (stormtrooper.getCenter()).z);
 	Mirage::Mesh monkey("monkey.obj");
-	printf("%0.2f %0.2f %0.2f\n", (stormtrooper.getCenter()).x, (stormtrooper.getCenter()).y, (stormtrooper.getCenter()).z);
+	printf("%0.2f %0.2f %0.2f\n", (monkey.getCenter()).x, (monkey.getCenter()).y, (monkey.getCenter()).z);
 
 
 	glEnable(GL_DEPTH_TEST);
@@ -73,8 +73,8 @@ int main(int argc, char * argv[]) {
 
 		// Model Matrices
 		glm::mat4 modelStormtrooper, modelMonkey;
-		modelStormtrooper = glm::translate(modelStormtrooper, glm::vec3(-stormtrooper.getCenter().x +(0.0f),-stormtrooper.getCenter().y +(0.0f), -stormtrooper.getCenter().z +(-5.0f)));
-		modelMonkey = glm::translate(modelMonkey, glm::vec3(-monkey.getCenter().x +(sin(param*M_PI/180)*4),-monkey.getCenter().y +(0.0f), -monkey.getCenter().z +((cos(param*M_PI/180)*4)-5.0f)));;
+		modelStormtrooper = glm::scale(glm::translate(modelStormtrooper, glm::vec3(-stormtrooper.getCenter().x +(0.0f),-stormtrooper.getCenter().y +(0.0f), -stormtrooper.getCenter().z +(-5.0f))), glm::vec3(glm::abs(sin(param*M_PI/180))+1, glm::abs(sin(param*M_PI/180))+1, glm::abs(sin(param*M_PI/180))+1));
+		modelMonkey = glm::rotate(glm::translate(modelMonkey, glm::vec3(-monkey.getCenter().x +(sin(param*M_PI/180)*4),-monkey.getCenter().y + 0.0f, -monkey.getCenter().z +((cos(param*M_PI/180)*4)-5.0f))), 7.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 		
 		// View Matrices
 		glm::mat4 view;
@@ -87,9 +87,9 @@ int main(int argc, char * argv[]) {
 		projection = glm::perspective(glm::radians(75.0f), (float) mWidth / mHeight, 0.1f, 100.0f);
 
 		// Normal Matrices
-		glm::mat3 normal, normal2;
-		normal = glm::inverse(glm::mat3(view * modelStormtrooper)); 
-		normal2 = glm::inverse(glm::mat3(view * modelMonkey));
+		glm::mat3 normalStormtrooper, normalMonkey;
+		normalStormtrooper = glm::inverse(glm::mat3(view * modelStormtrooper)); 
+		normalMonkey = glm::inverse(glm::mat3(view * modelMonkey));
 
 		int modelLoc = glGetUniformLocation(shader.get(), "modelMatrix");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelStormtrooper));
@@ -101,7 +101,7 @@ int main(int argc, char * argv[]) {
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 		int normalLoc = glGetUniformLocation(shader.get(), "normalMatrix");
-		glUniformMatrix3fv(normalLoc, 1, GL_TRUE, glm::value_ptr(normal));
+		glUniformMatrix3fv(normalLoc, 1, GL_TRUE, glm::value_ptr(normalStormtrooper));
 
 		int ambientLightColorU = glGetUniformLocation(shader.get(), "ambientLightColor");
 		int directionalLightU = glGetUniformLocation(shader.get(), "directionalLight");
@@ -134,7 +134,7 @@ int main(int argc, char * argv[]) {
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMonkey));
 
 		normalLoc = glGetUniformLocation(shader.get(), "normalMatrix");
-		glUniformMatrix3fv(normalLoc, 1, GL_TRUE, glm::value_ptr(normal2));
+		glUniformMatrix3fv(normalLoc, 1, GL_TRUE, glm::value_ptr(normalMonkey));
 
 		monkey.draw(shader.get());
 
@@ -150,6 +150,9 @@ void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+
+	double xpos, ypos;
+	glfwGetCursorPos(window, &xpos, &ypos);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
