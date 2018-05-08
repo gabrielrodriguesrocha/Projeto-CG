@@ -1,7 +1,7 @@
 // Local Headers
 #include "glitter.hpp"
 #include "shader.hpp"
-#include "stormtrooper.hpp"
+#include "mesh.hpp"
 
 // System Headers
 #include <glad/glad.h>
