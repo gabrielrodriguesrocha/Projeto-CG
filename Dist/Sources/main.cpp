@@ -104,8 +104,8 @@ int main(int argc, char * argv[]) {
 		 * Create a 4*4 transformation matrix from a vector of 3 components containing 
 		 * the center of the object on each axis through max/min interpolation
 		 */
-		modelStormtrooper = glm::translate(modelStormtrooper, glm::vec3(-stormtrooper.getCenter().x +(0.0f),-stormtrooper.getCenter().y +(0.0f), -stormtrooper.getCenter().z +(-5.0f)));
-		modelMonkey = glm::translate(modelMonkey, glm::vec3(-monkey.getCenter().x +(sin(param*M_PI/180)*4),-monkey.getCenter().y +(0.0f), -monkey.getCenter().z +((cos(param*M_PI/180)*4)-5.0f)));;
+		modelStormtrooper = glm::scale(glm::translate(modelStormtrooper, glm::vec3(-stormtrooper.getCenter().x +(0.0f),-stormtrooper.getCenter().y +(0.0f), -stormtrooper.getCenter().z +(-5.0f))), glm::vec3(glm::abs(sin(param*M_PI/180))+1, glm::abs(sin(param*M_PI/180))+1, glm::abs(sin(param*M_PI/180))+1));	
+		modelMonkey = glm::rotate(glm::translate(modelMonkey, glm::vec3(-monkey.getCenter().x +(sin(param*M_PI/180)*4),-monkey.getCenter().y + 0.0f, -monkey.getCenter().z +((cos(param*M_PI/180)*4)-5.0f))), 7.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 		
 		
 		/*
