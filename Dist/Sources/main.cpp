@@ -47,7 +47,8 @@ int main(int argc, char * argv[]) {
 	glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
 
 
-	/* Build and Compile Shaders
+	/* 
+	 * Build and Compile Shaders
 	 * -------------------------
 	 */
 	Mirage::Shader shader;
@@ -73,13 +74,14 @@ int main(int argc, char * argv[]) {
 	
 	int param = 0;
 	
-    /* Rendering Loop
+    /* 
+     * Rendering Loop
 	 * --------------
 	 *
-	 * glfwWindowShouldClose(mWindow) return the value of "close" flag from the window
+	 * 	glfwWindowShouldClose(mWindow) return the value of "close" flag from the window
      */
     while (glfwWindowShouldClose(mWindow) == false) {
-    	// Verify the permanence of the loop
+    	// Verify the permanence of the loop, detailed explanation near declaration.
 		processInput(mWindow);
 
         /* 
@@ -95,13 +97,14 @@ int main(int argc, char * argv[]) {
 		shader.activate();
 
 
-		/* Model Matrices
+		/* 
+		 * Model Matrices
 		 * --------------
 		 */ 
 		glm::mat4 modelStormtrooper, modelMonkey;
 		
 		/*
-		 * Create a 4*4 transformation matrix from a vector of 3 components containing 
+		 * Create a 4*4 scale and rotation matrix from a vector of 3 components containing 
 		 * the center of the object on each axis through max/min interpolation
 		 */
 		modelStormtrooper = glm::scale(glm::translate(modelStormtrooper, glm::vec3(-stormtrooper.getCenter().x +(0.0f),-stormtrooper.getCenter().y +(0.0f), -stormtrooper.getCenter().z +(-5.0f))), glm::vec3(glm::abs(sin(param*M_PI/180))+1, glm::abs(sin(param*M_PI/180))+1, glm::abs(sin(param*M_PI/180))+1));	
@@ -113,9 +116,9 @@ int main(int argc, char * argv[]) {
 	 	 * -------------
 	 	 *
 	 	 * view define the axes of the coordinate system through 3 vectors:
-	 	 *	- Eye: position of the camera's view point
-	 	 *	- Center: point looked
-	 	 *	- Up: defines the Y axis
+	 	 *		- Eye: position of the camera's view point
+	 	 *		- Center: point looked
+	 	 *		- Up: defines the Y axis
 	 	 */ 
 		glm::mat4 view;
 		view = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f),		// eye
@@ -145,7 +148,15 @@ int main(int argc, char * argv[]) {
 		normal = glm::inverse(glm::mat3(view * modelStormtrooper)); 
 		normal2 = glm::inverse(glm::mat3(view * modelMonkey));
 
-		
+		/*
+		 * glGetUniformLocation	-> get the location of the uniform variable in a program (i.e. shader)
+		 * glm::value_ptr(...)	-> get the address of the content
+		 * glUniformMatrix4fv	-> target a 4x4 matrix and modify it acording to the parameters:
+		 * 		- location of the uniform variable to be modified
+		 *		- number of matrices to be modified
+		 * 		- true or false to transpose the matrix
+		 * 		- pointer to array used to update de uniform variable
+		 */ 
 		int modelLoc = glGetUniformLocation(shader.get(), "modelMatrix");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelStormtrooper));
 
@@ -166,15 +177,24 @@ int main(int argc, char * argv[]) {
 		int shininessU = glGetUniformLocation(shader.get(), "shininess");
 
 		glm::vec3 ambientLightColor = glm::vec3(0.2f, 0.2f, 0.2f);
-
 		glm::vec3 directionalLight = glm::vec3(-0.5f, 0.5f, 0.5f);
-
 		glm::vec3 materialSpecular = glm::vec3(0.5f, 0.5f, 0.5f);
 
 		float ambient = 0.2f;
 		float diffuse = 0.5f;
 		float shininess = 100.0f;
 
+
+		/*
+		 * glUniform3fv	-> target a vec3 to be modified according to:
+		 * 		- locaiton of the uniform value to be modified
+		 * 		- number of elements to be modified
+		 * 		- pointer to array used to update the value
+		 *
+		 * glUniform1f	-> target a float to be modified according to:
+		 * 		- location of the uniform variable to be modified
+		 * 		- new values to be used for the variable
+		 */
 		glUniform3fv(ambientLightColorU, 1, glm::value_ptr(ambientLightColor));
 		glUniform3fv(directionalLightU, 1, glm::value_ptr(directionalLight));
 		glUniform3fv(materialSpecularU, 1, glm::value_ptr(materialSpecular));
@@ -182,6 +202,7 @@ int main(int argc, char * argv[]) {
 		glUniform1f(materialAmbientU, ambient);
 		glUniform1f(materialDiffuseU, diffuse);
 		glUniform1f(shininessU, shininess);
+
 
 		stormtrooper.draw(shader.get());
 
@@ -193,7 +214,15 @@ int main(int argc, char * argv[]) {
 
 		monkey.draw(shader.get());
 
-        // Flip Buffers and Draw
+
+        /*
+         * Flip Buffers and Draw
+         * ---------------------
+         *
+         * glfwSwapBuffers	-> swap the front and back buffers of the window
+         * glfwPollEvents	-> process events that have already been received
+         * glfwTerminate	-> destroy all remaining windows and cursors
+         */ 
         glfwSwapBuffers(mWindow);
         glfwPollEvents();
 		param+=1;
@@ -202,7 +231,8 @@ int main(int argc, char * argv[]) {
 }
 
 
-/* processInput(GLFWwindow *window)
+/* 
+ * processInput(GLFWwindow *window):
  * If the last state reported for the ESC key on this window is 
  * "GLFW_PRESS", set the "close" flag to true (terminate the loop)
  */
