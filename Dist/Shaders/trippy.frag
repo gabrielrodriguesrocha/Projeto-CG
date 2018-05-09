@@ -2,6 +2,8 @@
 
 precision mediump float;
 
+in vec3 col;
+
 out vec4 outputColor;
 vec2 iResolution = vec2(1280.0, 800.0);
 void main(void)
@@ -31,5 +33,5 @@ void main(void)
     uint texel = (xdist & 255u) ^ (ydist & 255u) ^ z;
     texel %= 16u;
     float c = float(texel) / 16.0;
-    outputColor = vec4(vec3(c), 1.0);
+    outputColor = vec4(vec3(c) + col, 1.0);
 }

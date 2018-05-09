@@ -5,7 +5,7 @@ CFLAGS=-std=c++11 -Wall -D PROJECT_SOURCE_DIR=\"$(shell pwd)\"
 LIBS=-lassimp -lglfw -lGL -lm -ldl -lBulletDynamics -lLinearMath 
 SRCDIR=Dist/Sources/
 GLADSRC=Local/glad/src/
-SOURCES=$(addprefix $(SRCDIR), main.cpp mesh.cpp shader.cpp) $(addprefix $(GLADSRC), glad.c)
+SOURCES=$(addprefix $(SRCDIR), main.cpp mesh.cpp shader.cpp scene.cpp) $(addprefix $(GLADSRC), glad.c)
 OBJECTS=$(SOURCES:.cpp=.o) 
 MAIN=Build/prog
 
