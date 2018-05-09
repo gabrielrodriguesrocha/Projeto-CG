@@ -76,7 +76,7 @@ int main(int argc, char * argv[]) {
     /* Rendering Loop
 	 * --------------
 	 *
-	 * 	glfwWindowShouldClose(mWindow) return the value of "close" flag from the window
+	 * glfwWindowShouldClose(mWindow) return the value of "close" flag from the window
      */
     while (glfwWindowShouldClose(mWindow) == false) {
     	// Verify the permanence of the loop
@@ -139,7 +139,7 @@ int main(int argc, char * argv[]) {
 		 * Normal Matrices
 		 * ---------------
 		 *
-		 * normal contain the inverse of the 3*3 matrix from view*model
+		 * normal contain the inverse of the upper 3*3 matrix from view*model
 		 */ 
 		glm::mat3 normal, normal2;
 		normal = glm::inverse(glm::mat3(view * modelStormtrooper)); 
