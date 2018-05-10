@@ -99,6 +99,7 @@ int main(int argc, char * argv[]) {
 
 	
 	int param = 0;
+	glfwSetCursorPos(mWindow, mWidth/2.0, mHeight/2.0);
 	
     /* Rendering Loop
 	 * --------------
@@ -152,6 +153,8 @@ glm::mat4 processInput(Mirage::Scene scene, GLFWwindow *window)
 
 	horizontalAngle += mouseSpeed * deltaTime * float( mWidth/2 - xpos );
 	verticalAngle   += mouseSpeed * deltaTime * float( mHeight/2 - ypos );
+
+	glfwSetCursorPos(window, mWidth/2.0, mHeight/2.0);
 
 	glm::vec3 direction(
     	cos(verticalAngle) * sin(horizontalAngle),
