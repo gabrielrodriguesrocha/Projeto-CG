@@ -28,6 +28,10 @@ namespace Mirage
     }
 
     void Scene::draw() {
+
+        printf("In draw: \n");
+        std::cout << getViewMatrix()[0][0] << std::endl;
+
         for (auto i : mObjects) {
             glm::mat4 mModelMatrix = i->getModelMatrix();
             glm::mat4 mNormalMatrix = glm::inverse(glm::mat3(mViewMatrix * mModelMatrix));
@@ -55,15 +59,51 @@ namespace Mirage
             glUniform3fv(materialSpecularU, 1, glm::value_ptr(i->getMaterialSpecular()));
 
 		    int materialAmbientU = glGetUniformLocation(i->getShader(), "materialAmbient");
-            glUniform1f(materialAmbientU, ads.ambient);
+            glUniform1f(materialAmbientU, 0.2f);
 
 		    int materialDiffuseU = glGetUniformLocation(i->getShader(), "materialDiffuse");
-            glUniform1f(materialDiffuseU, ads.diffuse);
+            glUniform1f(materialDiffuseU, 0.5f);
 
 		    int shininessU = glGetUniformLocation(i->getShader(), "shininess");
-            glUniform1f(shininessU, ads.shininess);
+            glUniform1f(shininessU, 100.0f);
 
             i->draw();
         }
+    }
+
+    void Scene::setViewMatrix(glm::mat4 m) {
+        printf("Before\n");
+        std::cout << mViewMatrix[0][0] << std::endl;
+        mViewMatrix = m;
+        printf("After\n");
+        std::cout << mViewMatrix[0][0] << std::endl;
+    }
+
+    void Scene::setProjectionMatrix(glm::mat4 m) {
+        mProjectionMatrix = m;
+    }
+
+    void Scene::setDirectionalLight(glm::vec3 m) {
+        mDirectionalLight = m;
+    }
+
+    void Scene::setAmbientLightColor(glm::vec3 m) {
+        mAmbientLightColor = m;
+    }
+
+    glm::mat4 Scene::getViewMatrix() {
+        return mViewMatrix;
+    }
+
+    glm::mat4 Scene::getProjectionMatrix() {
+        return mProjectionMatrix;
+    }
+
+    glm::vec3 Scene::getDirectionalLight() {
+        return mDirectionalLight;
+    }
+
+    glm::vec3 Scene::getAmbientLightColor() {
+        return mAmbientLightColor;
     }
 }

@@ -15,8 +15,19 @@
 #include <iostream>
 
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
+void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+glm::mat4 processInput(Mirage::Scene scene, GLFWwindow *window);
+
+// position
+glm::vec3 position = glm::vec3( 0, 0, 0 );
+// horizontal angle : toward -Z
+float horizontalAngle = 3.14f;
+// vertical angle : 0, look at the horizon
+float verticalAngle = 0.0f;
+float speed = 3.0f; // 3 units / second
+float mouseSpeed = 0.005f;
+double xpos, ypos;
+double lastTime = 0;
 
 int main(int argc, char * argv[]) {
 
@@ -46,37 +57,34 @@ int main(int argc, char * argv[]) {
     fprintf(stderr, "OpenGL %s\n", glGetString(GL_VERSION));
     
     // Set the framebuffer size callback of the current window
-	glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
+	glfwSetFramebufferSizeCallback(mWindow, framebufferSizeCallback);
 
 
 	/* Build and Compile Shaders
 	 * -------------------------
 	 */
+
 	Mirage::Shader monkeyShader;
 	monkeyShader.attach("main.vert").attach("main.frag");
 	monkeyShader.link();
 	Mirage::Shader stormtrooperShader;
 	stormtrooperShader.attach("main.vert").attach("trippy.frag");
 	stormtrooperShader.link();
-
-	        
-    
-
+	
+	
 	// Load the mesh (collection of vertices) of each object
 	Mirage::Mesh stormtrooper("stormtrooper.obj", // filename
 							  & monkeyShader, // shader
 							  glm::vec3(0.5f, 0.5f, 0.5f), // material specular
 							  Mirage::ADS {0.2f, 0.5f, 100.0f }); // ambient, diffuse and shininess
-
 	Mirage::Mesh monkey("monkey.obj",// filename
 							  & monkeyShader, // shader
 							  glm::vec3(0.5f, 0.5f, 0.5f),// material specular
 							  Mirage::ADS {0.2f, 0.5f, 100.0f }); // ambient, diffuse and shininess
-
 	Mirage::Scene scene({& stormtrooper, & monkey}, // meshes
 						glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 1.0f, 0.0f)), // view matrix
 						glm::perspective(glm::radians(75.0f), (float) mWidth / mHeight, 0.1f, 100.0f), // projection matrix
-						glm::vec3(0.5f, 3.0f, -3.0f), // directional light
+						glm::vec3(-0.5f, 5.0f, 4.5f), // directional light
 						glm::vec3(0.2f, 0.2f, 0.2f)); // ambient light colour
 
 	
@@ -99,7 +107,8 @@ int main(int argc, char * argv[]) {
      */
     while (glfwWindowShouldClose(mWindow) == false) {
     	// Process keyboard and mouse input
-		processInput(mWindow);
+		glm::mat4 viewMatrix = processInput(scene, mWindow);
+		scene.setViewMatrix(viewMatrix);
 
         /* 
          * glClearColor(1.0f, 1.0f, 1.0f, 1.0f);-> Specify clear values for the color buffers
@@ -119,6 +128,7 @@ int main(int argc, char * argv[]) {
         glfwSwapBuffers(mWindow);
         glfwPollEvents();
 		param+=1;
+		lastTime = glfwGetTime();
     }   glfwTerminate();
     return EXIT_SUCCESS;
 }
@@ -128,13 +138,58 @@ int main(int argc, char * argv[]) {
  * If the last state reported for the ESC key on this window is 
  * "GLFW_PRESS", set the "close" flag to true (terminate the loop)
  */
-void processInput(GLFWwindow *window)
+glm::mat4 processInput(Mirage::Scene scene, GLFWwindow *window)
 {
+	double currentTime = glfwGetTime();
+	float deltaTime = float(currentTime - lastTime) + 0.02;
+
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+
+	glfwGetCursorPos(window, &xpos, &ypos);
+
+	std::cout << position.x << " " << position.y << " " << position.z << std::endl;
+
+	horizontalAngle += mouseSpeed * deltaTime * float( mWidth/2 - xpos );
+	verticalAngle   += mouseSpeed * deltaTime * float( mHeight/2 - ypos );
+
+	glm::vec3 direction(
+    	cos(verticalAngle) * sin(horizontalAngle),
+    	sin(verticalAngle),
+    	cos(verticalAngle) * cos(horizontalAngle)
+	);
+
+	glm::vec3 right = glm::vec3(
+    	sin(horizontalAngle - 3.14f/2.0f),
+    	0,
+    	cos(horizontalAngle - 3.14f/2.0f)
+	);
+
+	glm::vec3 up = glm::cross( right, direction );
+
+	glfwSetCursorPos(window, mWidth/2.0, mHeight/2.0);
+
+	// Move forward
+	if (glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS){
+	    position += direction * deltaTime * speed;
+	}
+	// Move backward
+	if (glfwGetKey( window, GLFW_KEY_S ) == GLFW_PRESS){
+	    position -= direction * deltaTime * speed;
+	}
+	// Strafe right
+	if (glfwGetKey( window, GLFW_KEY_D ) == GLFW_PRESS){
+	    position += right * deltaTime * speed;
+	}
+	// Strafe left
+	if (glfwGetKey( window, GLFW_KEY_A ) == GLFW_PRESS){
+	    position -= right * deltaTime * speed;
+	}
+
+	return glm::lookAt(position, position+direction, up);
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
 	// make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significantly larger than specified on retina displays.
