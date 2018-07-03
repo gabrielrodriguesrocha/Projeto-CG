@@ -59,13 +59,13 @@ namespace Mirage
             glUniform3fv(materialSpecularU, 1, glm::value_ptr(i->getMaterialSpecular()));
 
 		    int materialAmbientU = glGetUniformLocation(i->getShader(), "materialAmbient");
-            glUniform1f(materialAmbientU, 0.2f);
+            glUniform1f(materialAmbientU, ads.ambient);
 
 		    int materialDiffuseU = glGetUniformLocation(i->getShader(), "materialDiffuse");
-            glUniform1f(materialDiffuseU, 0.5f);
+            glUniform1f(materialDiffuseU, ads.diffuse);
 
 		    int shininessU = glGetUniformLocation(i->getShader(), "shininess");
-            glUniform1f(shininessU, 100.0f);
+            glUniform1f(shininessU, ads.shininess);
 
             i->draw();
         }

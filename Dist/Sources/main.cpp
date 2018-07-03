@@ -120,8 +120,29 @@ int main(int argc, char * argv[]) {
         glClear(GL_COLOR_BUFFER_BIT);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		stormtrooper.setModelMatrix(glm::scale(glm::translate(glm::mat4(), glm::vec3(-stormtrooper.getCenter().x +(0.0f),-stormtrooper.getCenter().y +(0.0f), -stormtrooper.getCenter().z +(-5.0f))), glm::vec3(glm::abs(sin(param*M_PI/180))+1, glm::abs(sin(param*M_PI/180))+1, glm::abs(sin(param*M_PI/180))+1)));	
-		monkey.setModelMatrix(glm::rotate(glm::translate(glm::mat4(), glm::vec3(-monkey.getCenter().x +(sin(param*M_PI/180)*4),-monkey.getCenter().y + 0.0f, -monkey.getCenter().z +((cos(param*M_PI/180)*4)-5.0f))), 7.0f, glm::vec3(0.0f, 1.0f, 0.0f)));
+		glm::mat4 stormtrooperModelMatrix = glm::translate( glm::mat4(), 
+															glm::vec3(-stormtrooper.getCenter().x +(0.0f),
+																	  -stormtrooper.getCenter().y +(0.0f), 
+																	  -stormtrooper.getCenter().z +(-5.0f)));
+		stormtrooperModelMatrix = glm::scale(stormtrooperModelMatrix, 
+											 glm::vec3(glm::abs(sin(param*M_PI/180))+1, 
+											 		   glm::abs(sin(param*M_PI/180))+1, 
+													   glm::abs(sin(param*M_PI/180))+1));
+
+		glm::mat4 monkeyModelMatrix = glm::translate(glm::mat4(), 
+												     glm::vec3(-monkey.getCenter().x +(sin(param*M_PI/180)*4),
+													 		   -monkey.getCenter().y + 0.0f, 
+															   -monkey.getCenter().z +((cos(param*M_PI/180)*4)-5.0f)));
+		
+		monkeyModelMatrix = glm::rotate(monkeyModelMatrix,
+										7.0f, 
+										glm::vec3(0.0f, 1.0f, 0.0f));
+
+		stormtrooper.setModelMatrix(stormtrooperModelMatrix);
+		monkey.setModelMatrix(monkeyModelMatrix);
+
+		/*stormtrooper.setModelMatrix(glm::scale(glm::translate(glm::mat4(), glm::vec3(-stormtrooper.getCenter().x +(0.0f),-stormtrooper.getCenter().y +(0.0f), -stormtrooper.getCenter().z +(-5.0f))), glm::vec3(glm::abs(sin(param*M_PI/180))+1, glm::abs(sin(param*M_PI/180))+1, glm::abs(sin(param*M_PI/180))+1)));	
+		monkey.setModelMatrix(glm::rotate(glm::translate(glm::mat4(), glm::vec3(-monkey.getCenter().x +(sin(param*M_PI/180)*4),-monkey.getCenter().y + 0.0f, -monkey.getCenter().z +((cos(param*M_PI/180)*4)-5.0f))), 7.0f, glm::vec3(0.0f, 1.0f, 0.0f)));*/
 
 		scene.draw();
 
