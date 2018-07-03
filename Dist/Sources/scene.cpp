@@ -34,7 +34,7 @@ namespace Mirage
 
         for (auto i : mObjects) {
             glm::mat4 mModelMatrix = i->getModelMatrix();
-            glm::mat4 mNormalMatrix = glm::inverse(glm::mat3(mViewMatrix * mModelMatrix));
+            glm::mat3 mNormalMatrix = glm::inverse(glm::mat3(mViewMatrix * mModelMatrix));
             ADS ads = i->getADS();
 
             int modelLoc = glGetUniformLocation(i->getShader(), "modelMatrix");
