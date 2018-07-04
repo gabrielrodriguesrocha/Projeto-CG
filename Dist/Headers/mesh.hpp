@@ -62,6 +62,8 @@ namespace Mirage
         void setADS(ADS m);
         void setShader (Shader * shader);
 
+        void activateShader ();
+
         glm::mat4 getModelMatrix();
         glm::vec3 getMaterialSpecular();
         ADS getADS();

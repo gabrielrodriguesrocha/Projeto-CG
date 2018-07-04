@@ -2,14 +2,16 @@
 #include "scene.hpp"
 
 #include <iostream>
+#include <glm/ext.hpp>
 
 // Define Namespace
 namespace Mirage
 {
     Scene::Scene(std::initializer_list<Mesh *> list) : Scene() {
-        for (auto i : list) {
+        /*for (auto i : list) {
             mObjects.push_back(i);
-        }
+        }*/
+        mObjects.insert(mObjects.end(), list.begin(), list.end());
     }
     
     Scene::Scene(std::initializer_list<Mesh *> list,
@@ -18,9 +20,10 @@ namespace Mirage
           glm::vec3 directionalLight,
           glm::vec3 ambientLightColor) : Scene() {
 
-        for (auto i : list) {
+        /*for (auto i : list) {
             mObjects.push_back(i);
-        }
+        }*/
+        mObjects.insert(mObjects.end(), list.begin(), list.end());
         mViewMatrix = viewMatrix;
         mProjectionMatrix = projectionMatrix;
         mDirectionalLight = directionalLight;
@@ -29,13 +32,12 @@ namespace Mirage
 
     void Scene::draw() {
 
-        printf("In draw: \n");
-        std::cout << getViewMatrix()[0][0] << std::endl;
-
         for (auto i : mObjects) {
+
             glm::mat4 mModelMatrix = i->getModelMatrix();
             glm::mat3 mNormalMatrix = glm::inverse(glm::mat3(mViewMatrix * mModelMatrix));
             ADS ads = i->getADS();
+            i->activateShader();
 
             int modelLoc = glGetUniformLocation(i->getShader(), "modelMatrix");
 		    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(mModelMatrix));
@@ -66,17 +68,13 @@ namespace Mirage
 
 		    int shininessU = glGetUniformLocation(i->getShader(), "shininess");
             glUniform1f(shininessU, ads.shininess);
-
+            
             i->draw();
         }
     }
 
     void Scene::setViewMatrix(glm::mat4 m) {
-        printf("Before\n");
-        std::cout << mViewMatrix[0][0] << std::endl;
         mViewMatrix = m;
-        printf("After\n");
-        std::cout << mViewMatrix[0][0] << std::endl;
     }
 
     void Scene::setProjectionMatrix(glm::mat4 m) {

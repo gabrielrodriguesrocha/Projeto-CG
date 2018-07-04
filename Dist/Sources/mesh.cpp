@@ -7,6 +7,7 @@
 // System Headers
 #include <stb_image.h>
 
+#include <iostream>
 
 // Define Namespace
 namespace Mirage
@@ -111,7 +112,6 @@ namespace Mirage
     }
 
     void Mesh::draw() {
-        mShader->activate();
         Mesh::draw(mShader->get());
         //mShader->deactivate();
     }
@@ -222,6 +222,10 @@ namespace Mirage
 
     void Mesh::setShader (Shader * shader) {
         mShader = shader;
+    }
+
+    void Mesh::activateShader () {
+        mShader->activate();
     }
 
     void Mesh::setModelMatrix(glm::mat4 m) {
