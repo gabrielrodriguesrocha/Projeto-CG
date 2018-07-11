@@ -4,6 +4,7 @@
 #include "mesh.hpp"
 #include "scene.hpp"
 #include "camera.hpp"
+#include "util.hpp"
 
 // System Headers
 #include <glad/glad.h>
@@ -96,7 +97,7 @@ int main(int argc, char * argv[]) {
 	
 	// Load the mesh (collection of vertices) of each object
 	Mirage::Mesh stormtrooper("stormtrooper.obj", // filename
-							  & stormtrooperShader, // shader
+							  & monkeyShader, // shader
 							  glm::vec3(0.5f, 0.5f, 0.5f), // material specular
 							  Mirage::ADS {0.2f, 0.5f, 100.0f }); // ambient, diffuse and shininess
 	Mirage::Mesh monkey("monkey.obj",// filename
@@ -128,6 +129,12 @@ int main(int argc, char * argv[]) {
 	 *
 	 * glfwWindowShouldClose(mWindow) return the value of "close" flag from the window
      */
+	float t = 0.0f;
+	glm::vec3 a = glm::normalize(glm::vec3(-10.0f, 20.0f, 0.0f));
+	glm::vec3 b = glm::normalize(glm::vec3(-10.0f, -20.0f, -10.0f));
+	glm::vec3 c = glm::normalize(glm::vec3(10.0f, 20.0f, 0.0f));
+	glm::vec3 d = glm::normalize(glm::vec3(10.0f, -20.0f, -10.0f));
+	glm::vec3 monkeyPos;
     while (glfwWindowShouldClose(mWindow) == false) {
 		float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -157,6 +164,12 @@ int main(int argc, char * argv[]) {
 											 		   glm::abs(sin(param*M_PI/180))+1, 
 													   glm::abs(sin(param*M_PI/180))+1));
 
+		if (t < 1) {
+			bezier(monkeyPos, a, b, c, d, t);
+			t += 0.001;
+		}
+		glm::mat4 monkeyModelMatrix = glm::translate(glm::mat4(), monkeyPos + glm::vec3(-monkey.getCenter().x, -monkey.getCenter().y, -monkey.getCenter().z));
+		/*
 		glm::mat4 monkeyModelMatrix = glm::translate(glm::mat4(), 
 												     glm::vec3(-monkey.getCenter().x +(sin(param*M_PI/180)*4),
 													 		   -monkey.getCenter().y + 0.0f, 
@@ -165,6 +178,7 @@ int main(int argc, char * argv[]) {
 		monkeyModelMatrix = glm::rotate(monkeyModelMatrix,
 										7.0f, 
 										glm::vec3(0.0f, 1.0f, 0.0f));
+		*/
 
 		stormtrooper.setModelMatrix(stormtrooperModelMatrix);
 		monkey.setModelMatrix(monkeyModelMatrix);
