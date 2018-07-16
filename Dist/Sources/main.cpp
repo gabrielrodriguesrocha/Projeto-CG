@@ -24,16 +24,7 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
-/*// position
-glm::vec3 position = glm::vec3( 0, 0, 0 );
-// horizontal angle : toward -Z
-float horizontalAngle = 3.14f;
-// vertical angle : 0, look at the horizon
-float verticalAngle = 0.0f;
-float speed = 3.0f; // 3 units / second
-float mouseSpeed = 0.005f;
-double xpos, ypos;*/
-Mirage::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Mirage::Camera camera(glm::vec3(0.0f, 6.0f, 20.0f));
 float lastX = mWidth / 2.0f;
 float lastY = mHeight / 2.0f;
 bool firstMouse = true;
@@ -70,7 +61,7 @@ int main(int argc, char * argv[]) {
     glfwMakeContextCurrent(mWindow);
 
     // tell GLFW to capture our mouse
-    glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
     // Load OpenGL
     gladLoadGL();
@@ -87,24 +78,36 @@ int main(int argc, char * argv[]) {
 	 * -------------------------
 	 */
 
-	Mirage::Shader monkeyShader;
-	monkeyShader.attach("main.vert").attach("main.frag");
-	monkeyShader.link();
+	Mirage::Shader mainShader;
+	mainShader.attach("main.vert").attach("main.frag");
+	mainShader.link();
 	Mirage::Shader stormtrooperShader;
 	stormtrooperShader.attach("main.vert").attach("trippy.frag");
 	stormtrooperShader.link();
 	
 	
 	// Load the mesh (collection of vertices) of each object
-	Mirage::Mesh stormtrooper("stormtrooper.obj", // filename
-							  & monkeyShader, // shader
-							  glm::vec3(0.5f, 0.5f, 0.5f), // material specular
-							  Mirage::ADS {0.2f, 0.5f, 100.0f }); // ambient, diffuse and shininess
-	Mirage::Mesh monkey("monkey.obj",// filename
-							  & monkeyShader, // shader
+	Mirage::Mesh charmander("Charmander/Charmander.obj",// filename
+							  & mainShader, // shader
 							  glm::vec3(0.5f, 0.5f, 0.5f),// material specular
 							  Mirage::ADS {0.2f, 0.5f, 100.0f }); // ambient, diffuse and shininess
-	Mirage::Scene scene({& monkey, & stormtrooper}, // meshes
+	Mirage::Mesh eevee("Eevee/Eevee.obj",// filename
+							  & mainShader, // shader
+							  glm::vec3(0.5f, 0.5f, 0.5f),// material specular
+							  Mirage::ADS {0.2f, 0.5f, 100.0f }); // ambient, diffuse and shininess
+	Mirage::Mesh mew("Mew/Mew.obj",// filename
+							  & mainShader, // shader
+							  glm::vec3(0.5f, 0.5f, 0.5f),// material specular
+							  Mirage::ADS {0.2f, 0.5f, 100.0f }); // ambient, diffuse and shininess
+	Mirage::Mesh pikachu("Pikachu/PikachuM.obj",// filename
+							  & mainShader, // shader
+							  glm::vec3(0.5f, 0.5f, 0.5f),// material specular
+							  Mirage::ADS {0.2f, 0.5f, 100.0f }); // ambient, diffuse and shininess
+	Mirage::Mesh superTrainingStage("Super Training Stage/Super Training Stage.obj",// filename
+							  & mainShader, // shader
+							  glm::vec3(0.5f, 0.5f, 0.5f),// material specular
+							  Mirage::ADS {0.2f, 0.5f, 100.0f }); // ambient, diffuse and shininess
+	Mirage::Scene scene({& charmander, & eevee, & mew, & pikachu, & superTrainingStage}, // meshes
 						glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 1.0f, 0.0f)), // view matrix
 						glm::perspective(glm::radians(75.0f), (float) mWidth / mHeight, 0.1f, 100.0f), // projection matrix
 						glm::vec3(-0.5f, 5.0f, 4.5f), // directional light
@@ -129,12 +132,22 @@ int main(int argc, char * argv[]) {
 	 *
 	 * glfwWindowShouldClose(mWindow) return the value of "close" flag from the window
      */
-	float t = 0.0f;
-	glm::vec3 a = glm::normalize(glm::vec3(-10.0f, 20.0f, 0.0f));
-	glm::vec3 b = glm::normalize(glm::vec3(-10.0f, -20.0f, -10.0f));
-	glm::vec3 c = glm::normalize(glm::vec3(10.0f, 20.0f, 0.0f));
-	glm::vec3 d = glm::normalize(glm::vec3(10.0f, -20.0f, -10.0f));
-	glm::vec3 monkeyPos;
+
+	float tPikachu = 0.0f, tCharmander = 0.0f;
+	bool pikachuDone = false, charmanderDone = true, charmanderStart = false;
+
+	glm::vec3 pikachu1P = glm::vec3(6.0f, 0.0f, 0.0f);
+	glm::vec3 pikachu2P = glm::vec3(0.0f, 2.0f, -2.0f);
+	glm::vec3 pikachu3P = glm::vec3(0.0f, 6.0f, 2.0f);
+	glm::vec3 pikachu4P = glm::vec3(-6.0f, 2.0f, 0.0f);
+
+	glm::vec3 charmander1P = glm::vec3(-10.0f, 0.0f, 0.0f);
+	glm::vec3 charmander2P = glm::vec3(0.0f, 2.0f, -2.0f);
+	glm::vec3 charmander3P = glm::vec3(0.0f, 6.0f, 2.0f);
+	glm::vec3 charmander4P = glm::vec3(4.0f, 2.0f, 0.0f);
+
+	glm::vec3 pikachuPos, charmanderPos;
+
     while (glfwWindowShouldClose(mWindow) == false) {
 		float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -155,33 +168,80 @@ int main(int argc, char * argv[]) {
         glClear(GL_COLOR_BUFFER_BIT);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		glm::mat4 stormtrooperModelMatrix = glm::translate( glm::mat4(), 
-															glm::vec3(-stormtrooper.getCenter().x +(0.0f),
-																	  -stormtrooper.getCenter().y +(0.0f), 
-																	  -stormtrooper.getCenter().z +(-5.0f)));
-		stormtrooperModelMatrix = glm::scale(stormtrooperModelMatrix, 
-											 glm::vec3(glm::abs(sin(param*M_PI/180))+1, 
-											 		   glm::abs(sin(param*M_PI/180))+1, 
-													   glm::abs(sin(param*M_PI/180))+1));
-
-		if (t < 1) {
-			bezier(monkeyPos, a, b, c, d, t);
-			t += 0.001;
+		if (!pikachuDone) {
+			tPikachu += 0.01;
+			if (tPikachu > 1) {
+				tPikachu = 1;
+				pikachuDone = true;
+				charmanderStart = true;
+			}
 		}
-		glm::mat4 monkeyModelMatrix = glm::translate(glm::mat4(), monkeyPos + glm::vec3(-monkey.getCenter().x, -monkey.getCenter().y, -monkey.getCenter().z));
+		else {
+			tPikachu -= 0.01;
+			if (tPikachu < 0) {
+				tPikachu = 0;
+				pikachuDone = false;
+			}
+		}
+
+		if (charmanderStart) {
+			if (!charmanderDone) {
+				tCharmander += 0.01;
+				if (tCharmander > 1) {
+					tCharmander = 1;
+					charmanderDone = true;
+				}
+			}
+			else {
+				tCharmander -= 0.01;
+				if (tCharmander < 0) {
+					tCharmander = 0;
+					charmanderDone = false;
+				}
+			}
+		}
+
+		bezier(pikachuPos, pikachu1P, pikachu2P, pikachu3P, pikachu4P, tPikachu);
+		bezier(charmanderPos, charmander1P, charmander2P, charmander3P, charmander4P, tCharmander);
+
+		glm::mat4 charmanderModelMatrix = glm::translate(glm::mat4(), charmanderPos + glm::vec3(-charmander.getCenter().x, -charmander.getCenter().y, -charmander.getCenter().z + (-5.0f)));
+		charmanderModelMatrix = glm::rotate(charmanderModelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		charmanderModelMatrix = glm::rotate(charmanderModelMatrix, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+		charmanderModelMatrix = glm::scale(charmanderModelMatrix, glm::vec3(0.1f, 0.1f, 0.1f));
+
+		glm::mat4 eeveeModelMatrix = glm::translate(glm::mat4(), glm::vec3(-eevee.getCenter().x, -eevee.getCenter().y, -eevee.getCenter().z + (-15.0f)));
+		eeveeModelMatrix = glm::rotate(eeveeModelMatrix, glm::radians(90.0f), glm::vec3(-0.5f, 0.0f, 0.0f));
+		eeveeModelMatrix = glm::scale(eeveeModelMatrix, glm::vec3(0.1f, 0.1f, 0.1f));
+
+		glm::mat4 mewModelMatrix = glm::translate(glm::mat4(), glm::vec3(-mew.getCenter().x + (2.0f), -mew.getCenter().y + (7.0f), -mew.getCenter().z + (-5.0f)));
+		mewModelMatrix = glm::rotate(mewModelMatrix, glm::radians(90.0f), glm::vec3(-0.5f, 0.0f, 0.0f));
+		mewModelMatrix = glm::scale(mewModelMatrix, glm::vec3(0.1f, 0.1f, 0.1f));
+
+		glm::mat4 pikachuModelMatrix = glm::translate(glm::mat4(), pikachuPos + glm::vec3(-pikachu.getCenter().x, -pikachu.getCenter().y, -pikachu.getCenter().z + (-5.0f)));
+		pikachuModelMatrix = glm::rotate(pikachuModelMatrix, glm::radians(90.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+		pikachuModelMatrix = glm::rotate(pikachuModelMatrix, glm::radians(45.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+		pikachuModelMatrix = glm::scale(pikachuModelMatrix, glm::vec3(0.1f, 0.1f, 0.1f));
+
+		glm::mat4 superTrainingStageModelMatrix = glm::translate(glm::mat4(), glm::vec3(-superTrainingStage.getCenter().x, -superTrainingStage.getCenter().y, -superTrainingStage.getCenter().z + (-5.0f)));
+		superTrainingStageModelMatrix = glm::scale(superTrainingStageModelMatrix, glm::vec3(3.0f, 3.0f, 3.0f));
+		superTrainingStageModelMatrix = glm::rotate(superTrainingStageModelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		
 		/*
 		glm::mat4 monkeyModelMatrix = glm::translate(glm::mat4(), 
-												     glm::vec3(-monkey.getCenter().x +(sin(param*M_PI/180)*4),
-													 		   -monkey.getCenter().y + 0.0f, 
-															   -monkey.getCenter().z +((cos(param*M_PI/180)*4)-5.0f)));
+												     glm::vec3(-pikachu.getCenter().x +(sin(param*M_PI/180)*4),
+													 		   -pikachu.getCenter().y + 0.0f, 
+															   -pikachu.getCenter().z +((cos(param*M_PI/180)*4)-5.0f)));
 		
 		monkeyModelMatrix = glm::rotate(monkeyModelMatrix,
 										7.0f, 
 										glm::vec3(0.0f, 1.0f, 0.0f));
 		*/
 
-		stormtrooper.setModelMatrix(stormtrooperModelMatrix);
-		monkey.setModelMatrix(monkeyModelMatrix);
+		charmander.setModelMatrix(charmanderModelMatrix);
+		eevee.setModelMatrix(eeveeModelMatrix);
+		mew.setModelMatrix(mewModelMatrix);
+		pikachu.setModelMatrix(pikachuModelMatrix);
+		superTrainingStage.setModelMatrix(superTrainingStageModelMatrix);
 		scene.draw();
 
         // Flip Buffers and Draw

@@ -2,6 +2,7 @@
 
 precision mediump float;
 
+in vec2 UV;
 in vec3 eyeNormal;
 in vec4 eyePosition;
 
@@ -10,6 +11,8 @@ uniform mat3 normalMatrix;
 uniform vec3 ambientLightColor, directionalLight, materialSpecular;
 
 uniform float materialAmbient, materialDiffuse, shininess;
+
+uniform sampler2D myTextureSampler;
 
 out vec4 FragColor;
 
@@ -27,5 +30,6 @@ vec3 ads( vec4 position, vec3 norm )
 
 void main()
 {
-	FragColor = vec4(min(vec3(0.0) + ads(eyePosition, eyeNormal), 1.0), 1.0f);
+	FragColor = ( vec4(min(vec3(0.0) + ads(eyePosition, eyeNormal), 1.0), 1.0f) + vec4(texture( myTextureSampler, UV ).rgb, 1.0f) ) / 2.0f;
+	//FragColor = texture( myTextureSampler, UV ).rgb;
 } 

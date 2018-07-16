@@ -11,11 +11,13 @@ uniform mat4 projectionMatrix;
 
 uniform mat3 normalMatrix;
 
+out vec2 UV;
 out vec3 eyeNormal;
 out vec4 eyePosition;
 
 void main() {
 	eyeNormal = normalize(normalMatrix * normal);
 	eyePosition =  viewMatrix * modelMatrix * vec4(position, 1.0);
-	gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0); 
+	gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+	UV = uv;
 }
