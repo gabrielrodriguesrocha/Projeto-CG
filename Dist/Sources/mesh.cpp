@@ -169,8 +169,6 @@ namespace Mirage
 
         // Create New Mesh Node
         mSubMeshes.push_back(std::unique_ptr<Mesh>(new Mesh(vertices, indices, textures)));
-
-		printf("Mesh created\n");
     }
 
     std::map<GLuint, std::string> Mesh::process(std::string const & path,

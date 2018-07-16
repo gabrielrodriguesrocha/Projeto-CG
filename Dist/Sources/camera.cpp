@@ -26,6 +26,16 @@ namespace Mirage
     {
         return glm::lookAt(Position, Position + Front, Up);
     }
+
+    // Sets the position of the camera so it can be quickly displaced
+    void Camera::setPosition(glm::vec3 pos) { Position = pos; }
+
+    // Sets the position of the camera so it can be quickly displaced
+    void Camera::setFront(glm::vec3 front) { Front = front; }
+
+    // Sets the up vector of the camera so orientation can be quickly changed
+    void Camera::setUp(glm::vec3 up) { Up = up; }
+
     // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
     void Camera::processKeyboard(Camera_Movement direction, float deltaTime)
     {

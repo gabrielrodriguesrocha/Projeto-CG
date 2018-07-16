@@ -17,7 +17,7 @@ enum Camera_Movement {
 // Default camera values
 const float YAW         = -90.0f;
 const float PITCH       =  0.0f;
-const float SPEED       =  2.5f;
+const float SPEED       =  10.0f;
 const float SENSITIVITY =  0.1f;
 const float ZOOM        =  45.0f;
 
@@ -47,6 +47,12 @@ namespace Mirage
         Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
         glm::mat4 getViewMatrix();
+
+        void setFront(glm::vec3 front);
+
+        void setPosition(glm::vec3 pos);
+
+        void setUp(glm::vec3 up);
 
         void processKeyboard(Camera_Movement direction, float deltaTime);
 

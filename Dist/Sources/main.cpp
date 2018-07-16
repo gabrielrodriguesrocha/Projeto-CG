@@ -28,6 +28,7 @@ Mirage::Camera camera(glm::vec3(0.0f, 6.0f, 20.0f));
 float lastX = mWidth / 2.0f;
 float lastY = mHeight / 2.0f;
 bool firstMouse = true;
+bool topView = false;
 
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -133,20 +134,25 @@ int main(int argc, char * argv[]) {
 	 * glfwWindowShouldClose(mWindow) return the value of "close" flag from the window
      */
 
-	float tPikachu = 0.0f, tCharmander = 0.0f;
-	bool pikachuDone = false, charmanderDone = true, charmanderStart = false;
+	float tPikachu = 0.0f, tCharmander = 0.0f, tMew = 0.0f;
+	bool pikachuDone = true, pikachuStart = true, charmanderDone = true, charmanderStart = false;
 
 	glm::vec3 pikachu1P = glm::vec3(6.0f, 0.0f, 0.0f);
 	glm::vec3 pikachu2P = glm::vec3(0.0f, 2.0f, -2.0f);
 	glm::vec3 pikachu3P = glm::vec3(0.0f, 6.0f, 2.0f);
-	glm::vec3 pikachu4P = glm::vec3(-6.0f, 2.0f, 0.0f);
+	glm::vec3 pikachu4P = glm::vec3(-4.0f, 2.0f, 0.0f);
 
 	glm::vec3 charmander1P = glm::vec3(-10.0f, 0.0f, 0.0f);
 	glm::vec3 charmander2P = glm::vec3(0.0f, 2.0f, -2.0f);
 	glm::vec3 charmander3P = glm::vec3(0.0f, 6.0f, 2.0f);
-	glm::vec3 charmander4P = glm::vec3(4.0f, 2.0f, 0.0f);
+	glm::vec3 charmander4P = glm::vec3(1.0f, 0.0f, 0.0f);
 
-	glm::vec3 pikachuPos, charmanderPos;
+	glm::vec3 mew1P = glm::vec3(2.0f, 1.0f, -5.0f);
+	glm::vec3 mew2P = glm::vec3(0.0f, 10.0f, -4.0f);
+	glm::vec3 mew3P = glm::vec3(-2.0f, 3.0f, -3.0f);
+	glm::vec3 mew4P = glm::vec3(-4.0f, 10.0f, -2.0f);
+
+	glm::vec3 pikachuPos, charmanderPos, mewPos;
 
     while (glfwWindowShouldClose(mWindow) == false) {
 		float currentFrame = glfwGetTime();
@@ -168,19 +174,22 @@ int main(int argc, char * argv[]) {
         glClear(GL_COLOR_BUFFER_BIT);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		if (!pikachuDone) {
-			tPikachu += 0.01;
-			if (tPikachu > 1) {
-				tPikachu = 1;
-				pikachuDone = true;
-				charmanderStart = true;
+		if (pikachuStart) {
+			if (!pikachuDone) {
+				tPikachu += 0.01;
+				if (tPikachu > 1) {
+					tPikachu = 1;
+					pikachuDone = true;
+				}
 			}
-		}
-		else {
-			tPikachu -= 0.01;
-			if (tPikachu < 0) {
-				tPikachu = 0;
-				pikachuDone = false;
+			else {
+				tPikachu -= 0.01;
+				if (tPikachu < 0) {
+					tPikachu = 0;
+					pikachuDone = false;
+					charmanderStart = true;
+					pikachuStart = false;
+				}
 			}
 		}
 
@@ -197,23 +206,30 @@ int main(int argc, char * argv[]) {
 				if (tCharmander < 0) {
 					tCharmander = 0;
 					charmanderDone = false;
+					charmanderStart = false;
+					pikachuStart = true;
 				}
 			}
 		}
 
+		if (tMew < 1 && pikachuStart) {
+			tMew += 0.01;
+		}
+
 		bezier(pikachuPos, pikachu1P, pikachu2P, pikachu3P, pikachu4P, tPikachu);
 		bezier(charmanderPos, charmander1P, charmander2P, charmander3P, charmander4P, tCharmander);
+		bezier(mewPos, mew1P, mew2P, mew3P, mew4P, tMew);
 
 		glm::mat4 charmanderModelMatrix = glm::translate(glm::mat4(), charmanderPos + glm::vec3(-charmander.getCenter().x, -charmander.getCenter().y, -charmander.getCenter().z + (-5.0f)));
 		charmanderModelMatrix = glm::rotate(charmanderModelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		charmanderModelMatrix = glm::rotate(charmanderModelMatrix, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
 		charmanderModelMatrix = glm::scale(charmanderModelMatrix, glm::vec3(0.1f, 0.1f, 0.1f));
 
-		glm::mat4 eeveeModelMatrix = glm::translate(glm::mat4(), glm::vec3(-eevee.getCenter().x, -eevee.getCenter().y, -eevee.getCenter().z + (-15.0f)));
+		glm::mat4 eeveeModelMatrix = glm::translate(glm::mat4(), glm::vec3(-eevee.getCenter().x, -eevee.getCenter().y + abs(5.0f * sin(4.0f * tPikachu)), -eevee.getCenter().z + (-15.0f)));
 		eeveeModelMatrix = glm::rotate(eeveeModelMatrix, glm::radians(90.0f), glm::vec3(-0.5f, 0.0f, 0.0f));
 		eeveeModelMatrix = glm::scale(eeveeModelMatrix, glm::vec3(0.1f, 0.1f, 0.1f));
 
-		glm::mat4 mewModelMatrix = glm::translate(glm::mat4(), glm::vec3(-mew.getCenter().x + (2.0f), -mew.getCenter().y + (7.0f), -mew.getCenter().z + (-5.0f)));
+		glm::mat4 mewModelMatrix = glm::translate(glm::mat4(), mewPos + glm::vec3(-mew.getCenter().x, -mew.getCenter().y, -mew.getCenter().z));
 		mewModelMatrix = glm::rotate(mewModelMatrix, glm::radians(90.0f), glm::vec3(-0.5f, 0.0f, 0.0f));
 		mewModelMatrix = glm::scale(mewModelMatrix, glm::vec3(0.1f, 0.1f, 0.1f));
 
@@ -260,17 +276,31 @@ int main(int argc, char * argv[]) {
  */
 void processInput(GLFWwindow *window)
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.processKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.processKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.processKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.processKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { camera.processKeyboard(FORWARD, deltaTime); }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { camera.processKeyboard(BACKWARD, deltaTime); }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { camera.processKeyboard(LEFT, deltaTime); }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { camera.processKeyboard(RIGHT, deltaTime); }
+
+
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+	{
+		if (!topView)
+		{
+			camera.setPosition(glm::vec3(0.0f, 20.0f, 0.0f));
+			camera.setUp(glm::vec3(0.0f, 0.0f, -1.0f));
+			camera.setFront(glm::vec3(0.0f, -1.0f, 0.0f));
+			topView = true;
+		}
+		else
+		{
+			camera.setPosition(glm::vec3(0.0f, 6.0f, 20.0f));
+			camera.setUp(glm::vec3(0.0f, 1.0f, 0.0f));
+			camera.setFront(glm::vec3(0.0f, 0.0f, -1.0f));
+			topView = false;
+		}
+	}
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)
@@ -295,8 +325,6 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
 
-	std::cout << xpos << " " << ypos << std::endl;
-
     camera.processMouseMovement(xoffset, yoffset);
 }
 
@@ -304,5 +332,6 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 // ----------------------------------------------------------------------
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
+	std::cout << yoffset << std::endl;
     camera.processMouseScroll(yoffset);
 }
