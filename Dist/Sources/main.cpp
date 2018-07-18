@@ -62,7 +62,7 @@ int main(int argc, char * argv[]) {
     glfwMakeContextCurrent(mWindow);
 
     // tell GLFW to capture our mouse
-    //glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
     // Load OpenGL
     gladLoadGL();
