@@ -7,7 +7,7 @@
 // System Headers
 #include <stb_image.h>
 
-
+#include <iostream>
 
 // Define Namespace
 namespace Mirage
@@ -26,6 +26,29 @@ namespace Mirage
         auto index = filename.find_last_of("/");
         if (!scene) fprintf(stderr, "%s\n", loader.GetErrorString());
         else parse(filename.substr(0, index), scene->mRootNode, scene);
+    }
+
+    Mesh::Mesh(std::string const & filename,
+               Shader * shader,
+               glm::vec3 materialSpecular,
+               ADS ads) : Mesh()
+    {
+        // Load a Model from File
+        Assimp::Importer loader;
+        aiScene const * scene = loader.ReadFile(
+            PROJECT_SOURCE_DIR "/Dist/Models/" + filename,
+            aiProcessPreset_TargetRealtime_MaxQuality |
+            aiProcess_OptimizeGraph                   |
+            aiProcess_FlipUVs);
+
+        // Walk the Tree of Scene Nodes
+        auto index = filename.find_last_of("/");
+        if (!scene) fprintf(stderr, "%s\n", loader.GetErrorString());
+        else parse(filename.substr(0, index), scene->mRootNode, scene);
+
+        mShader = shader;
+        mADS = ads;
+        mMaterialSpecular = materialSpecular;
     }
 
     Mesh::Mesh(std::vector<Vertex> const & vertices,
@@ -70,6 +93,7 @@ namespace Mirage
     void Mesh::draw(GLuint shader)
     {
         unsigned int unit = 0, diffuse = 0, specular = 0;
+
 		for (auto &i : mSubMeshes) i->draw(shader);
         for (auto &i : mTextures)
         {   // Set Correct Uniform Names Using Texture Type (Omit ID for 0th Texture)
@@ -85,6 +109,11 @@ namespace Mirage
 			glBindVertexArray(mVertexArray);
             glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
+    }
+
+    void Mesh::draw() {
+        Mesh::draw(mShader->get());
+        //mShader->deactivate();
     }
 
     void Mesh::parse(std::string const & path, aiNode const * node, aiScene const * scene)
@@ -121,9 +150,9 @@ namespace Mirage
         }
 
         // Obtain Center Point by Interpolating Max and Min Points
-        center.x = (max.x - min.x) / 2;
-        center.y = (max.y - min.y) / 2;
-        center.z = (max.z - min.z) / 2;
+        mCenter.x = (max.x - min.x) / 2;
+        mCenter.y = (max.y - min.y) / 2;
+        mCenter.z = (max.z - min.z) / 2;
 
         // Create Mesh Indices for Indexed Drawing
         std::vector<GLuint> indices;
@@ -140,8 +169,6 @@ namespace Mirage
 
         // Create New Mesh Node
         mSubMeshes.push_back(std::unique_ptr<Mesh>(new Mesh(vertices, indices, textures)));
-
-		printf("Mesh created\n");
     }
 
     std::map<GLuint, std::string> Mesh::process(std::string const & path,
@@ -190,8 +217,42 @@ namespace Mirage
             textures.insert(std::make_pair(texture, mode));
         }   return textures;
     }
-    
-    Point Mesh::getCenter(){
-        return center;
+
+    void Mesh::setShader (Shader * shader) {
+        mShader = shader;
     }
+
+    void Mesh::activateShader () {
+        mShader->activate();
+    }
+
+    void Mesh::setModelMatrix(glm::mat4 m) {
+        mModelMatrix = m;
+    }
+    glm::mat4 Mesh::getModelMatrix() {
+        return mModelMatrix;
+    }
+
+    void Mesh::setMaterialSpecular(glm::vec3 m) {
+        mMaterialSpecular = m;
+    }
+    void Mesh::setADS(ADS m) {
+        mADS = m;
+    }
+
+    glm::vec3 Mesh::getMaterialSpecular() {
+        return mMaterialSpecular;
+    }
+    ADS Mesh::getADS() {
+        return mADS;
+    }
+    GLuint Mesh::getShader () {
+        return mShader->get();
+    }
+
+    Point Mesh::getCenter(){
+        return mCenter;
+    }
+
+
 };

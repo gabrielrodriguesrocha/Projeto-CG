@@ -6,6 +6,7 @@
 #include <assimp/scene.h>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <shader.hpp>
 
 // Standard Headers
 #include <map>
@@ -29,6 +30,10 @@ namespace Mirage
 	    float x, y, z;
     };
 
+    struct ADS {
+        float ambient, diffuse, shininess;
+    };
+
     class Mesh
     {
     public:
@@ -39,13 +44,31 @@ namespace Mirage
 
         // Implement Custom Constructors
         Mesh(std::string const & filename);
+        Mesh(std::string const & filename,
+             Shader * shader,
+             glm::vec3 materialSpecular,
+             ADS ads);
         Mesh(std::vector<Vertex> const & vertices,
              std::vector<GLuint> const & indices,
              std::map<GLuint, std::string> const & textures);
 
         // Public Member Functions
+        void draw();
         void draw(GLuint shader);
-	    Point getCenter();
+
+	    
+        void setModelMatrix(glm::mat4 m);
+        void setMaterialSpecular(glm::vec3 m);
+        void setADS(ADS m);
+        void setShader (Shader * shader);
+
+        void activateShader ();
+
+        glm::mat4 getModelMatrix();
+        glm::vec3 getMaterialSpecular();
+        ADS getADS();
+        GLuint getShader ();
+        Point getCenter();
 
     private:
 
@@ -70,9 +93,14 @@ namespace Mirage
         GLuint mVertexArray;
         GLuint mVertexBuffer;
         GLuint mElementBuffer;
-	
-	    //Private center
-	    Point center;
+
+        glm::mat4 mModelMatrix;
+        glm::vec3 mMaterialSpecular;
+        ADS mADS;
+
+        Point mCenter;
+
+        Shader * mShader;
 
     };
 };

@@ -2,8 +2,30 @@
 
 precision mediump float;
 
+in vec3 eyeNormal;
+in vec4 eyePosition;
+
+uniform mat3 normalMatrix;
+
+uniform vec3 ambientLightColor, directionalLight, materialSpecular;
+
+uniform float materialAmbient, materialDiffuse, shininess;
+
 out vec4 outputColor;
 vec2 iResolution = vec2(1280.0, 800.0);
+
+/* A function to determine the colour of a vertex, accounting
+   for ambient and directional light */
+vec3 ads( vec4 position, vec3 norm )
+{
+	vec3 s = normalize(vec3(vec4(directionalLight,1.0) - position));
+	vec3 v = normalize(vec3(-position));
+	vec3 r = reflect(-s, norm);
+	return ambientLightColor +
+	materialDiffuse * max(dot(s,norm), 0.0) +
+	materialSpecular * pow(max(dot(r,v), 0.0), shininess);
+}
+
 void main(void)
 { 
     vec2 uv = gl_FragCoord.xy / iResolution.xy;
@@ -31,5 +53,5 @@ void main(void)
     uint texel = (xdist & 255u) ^ (ydist & 255u) ^ z;
     texel %= 16u;
     float c = float(texel) / 16.0;
-    outputColor = vec4(vec3(c), 1.0);
+    outputColor = vec4((vec3(c) + min(vec3(0.0) + ads(eyePosition, eyeNormal), 1.0)) / 2.0, 1.0);
 }
