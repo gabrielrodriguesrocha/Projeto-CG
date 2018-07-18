@@ -76,18 +76,15 @@ int main(int argc, char * argv[]) {
     glfwSetScrollCallback(mWindow, scrollCallback);
 
 
-	/* Build and Compile Shaders
+	/* 
+	 * Build and Compile Shaders
 	 * -------------------------
 	 */
 
 	Mirage::Shader mainShader;
 	mainShader.attach("main.vert").attach("main.frag");
 	mainShader.link();
-	Mirage::Shader stormtrooperShader;
-	stormtrooperShader.attach("main.vert").attach("trippy.frag");
-	stormtrooperShader.link();
-	
-	
+  
 	// Load the mesh (collection of vertices) of each object
 	Mirage::Mesh charmander("Charmander/Charmander.obj",// filename
 							  & mainShader, // shader
@@ -133,10 +130,11 @@ int main(int argc, char * argv[]) {
 	int param = 0;
 	glfwSetCursorPos(mWindow, mWidth/2.0, mHeight/2.0);
 	
-    /* Rendering Loop
+    /* 
+     * Rendering Loop
 	 * --------------
 	 *
-	 * glfwWindowShouldClose(mWindow) return the value of "close" flag from the window
+	 * 	glfwWindowShouldClose(mWindow) return the value of "close" flag from the window
      */
 
 	float tPikachu = 0.0f, tCharmander = 0.0f, tMew = 0.0f;
@@ -246,21 +244,15 @@ int main(int argc, char * argv[]) {
 		glm::mat4 superTrainingStageModelMatrix = glm::translate(glm::mat4(), glm::vec3(-superTrainingStage.getCenter().x, -superTrainingStage.getCenter().y, -superTrainingStage.getCenter().z + (-5.0f)));
 		superTrainingStageModelMatrix = glm::scale(superTrainingStageModelMatrix, glm::vec3(3.0f, 3.0f, 3.0f));
 		superTrainingStageModelMatrix = glm::rotate(superTrainingStageModelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		/* 
+		 * Model Matrices
+		 * --------------
+		 */ 
 		
 		glm::mat4 charizardModelMatrix = glm::translate(glm::mat4(), glm::vec3(charizard.getCenter().x + (12.0f), charizard.getCenter().y + (2.0f), -charizard.getCenter().z + (-5.0f)));
 		charizardModelMatrix = glm::rotate(charizardModelMatrix, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
 		charizardModelMatrix = glm::rotate(charizardModelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 		charizardModelMatrix = glm::scale(charizardModelMatrix, glm::vec3(0.07f, 0.07f, 0.07f));
-		/*
-		glm::mat4 monkeyModelMatrix = glm::translate(glm::mat4(), 
-												     glm::vec3(-pikachu.getCenter().x +(sin(param*M_PI/180)*4),
-													 		   -pikachu.getCenter().y + 0.0f, 
-															   -pikachu.getCenter().z +((cos(param*M_PI/180)*4)-5.0f)));
-		
-		monkeyModelMatrix = glm::rotate(monkeyModelMatrix,
-										7.0f, 
-										glm::vec3(0.0f, 1.0f, 0.0f));
-		*/
 
 		charmander.setModelMatrix(charmanderModelMatrix);
 		eevee.setModelMatrix(eeveeModelMatrix);
@@ -270,7 +262,15 @@ int main(int argc, char * argv[]) {
 		charizard.setModelMatrix(charizardModelMatrix);
 		scene.draw();
 
-        // Flip Buffers and Draw
+
+        /*
+         * Flip Buffers and Draw
+         * ---------------------
+         *
+         * glfwSwapBuffers	-> swap the front and back buffers of the window
+         * glfwPollEvents	-> process events that have already been received
+         * glfwTerminate	-> destroy all remaining windows and cursors
+         */ 
         glfwSwapBuffers(mWindow);
         glfwPollEvents();
 		param+=1;
@@ -280,7 +280,8 @@ int main(int argc, char * argv[]) {
 }
 
 
-/* processInput(GLFWwindow *window)
+/* 
+ * processInput(GLFWwindow *window):
  * If the last state reported for the ESC key on this window is 
  * "GLFW_PRESS", set the "close" flag to true (terminate the loop)
  */
