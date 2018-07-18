@@ -29,6 +29,7 @@ float lastX = mWidth / 2.0f;
 float lastY = mHeight / 2.0f;
 bool firstMouse = true;
 bool topView = false;
+bool keyPress = false;
 
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -108,7 +109,11 @@ int main(int argc, char * argv[]) {
 							  & mainShader, // shader
 							  glm::vec3(0.5f, 0.5f, 0.5f),// material specular
 							  Mirage::ADS {0.2f, 0.5f, 100.0f }); // ambient, diffuse and shininess
-	Mirage::Scene scene({& charmander, & eevee, & mew, & pikachu, & superTrainingStage}, // meshes
+	Mirage::Mesh charizard("Charizard/CharizardMegaX.obj",// filename
+							  & mainShader, // shader
+							  glm::vec3(0.5f, 0.5f, 0.5f),// material specular
+							  Mirage::ADS {0.2f, 0.5f, 100.0f }); // ambient, diffuse and shininess
+	Mirage::Scene scene({& charmander, & eevee, & mew, & pikachu, & superTrainingStage, & charizard}, // meshes
 						glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 1.0f, 0.0f)), // view matrix
 						glm::perspective(glm::radians(75.0f), (float) mWidth / mHeight, 0.1f, 100.0f), // projection matrix
 						glm::vec3(-0.5f, 5.0f, 4.5f), // directional light
@@ -242,6 +247,10 @@ int main(int argc, char * argv[]) {
 		superTrainingStageModelMatrix = glm::scale(superTrainingStageModelMatrix, glm::vec3(3.0f, 3.0f, 3.0f));
 		superTrainingStageModelMatrix = glm::rotate(superTrainingStageModelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		
+		glm::mat4 charizardModelMatrix = glm::translate(glm::mat4(), glm::vec3(charizard.getCenter().x + (12.0f), charizard.getCenter().y + (2.0f), -charizard.getCenter().z + (-5.0f)));
+		charizardModelMatrix = glm::rotate(charizardModelMatrix, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+		charizardModelMatrix = glm::rotate(charizardModelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+		charizardModelMatrix = glm::scale(charizardModelMatrix, glm::vec3(0.07f, 0.07f, 0.07f));
 		/*
 		glm::mat4 monkeyModelMatrix = glm::translate(glm::mat4(), 
 												     glm::vec3(-pikachu.getCenter().x +(sin(param*M_PI/180)*4),
@@ -258,6 +267,7 @@ int main(int argc, char * argv[]) {
 		mew.setModelMatrix(mewModelMatrix);
 		pikachu.setModelMatrix(pikachuModelMatrix);
 		superTrainingStage.setModelMatrix(superTrainingStageModelMatrix);
+		charizard.setModelMatrix(charizardModelMatrix);
 		scene.draw();
 
         // Flip Buffers and Draw
@@ -277,18 +287,22 @@ int main(int argc, char * argv[]) {
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
+	
+	if(!topView) {	
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { camera.processKeyboard(FORWARD, deltaTime); }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { camera.processKeyboard(BACKWARD, deltaTime); }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { camera.processKeyboard(LEFT, deltaTime); }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { camera.processKeyboard(RIGHT, deltaTime); }
+    	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { camera.processKeyboard(FORWARD, deltaTime); }
+    	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { camera.processKeyboard(BACKWARD, deltaTime); }
+    	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { camera.processKeyboard(LEFT, deltaTime); }
+    	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { camera.processKeyboard(RIGHT, deltaTime); }
+	}
 
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) { keyPress = true; }
 
-	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE && keyPress) {
 	{
 		if (!topView)
 		{
-			camera.setPosition(glm::vec3(0.0f, 20.0f, 0.0f));
+			camera.setPosition(glm::vec3(0.0f, 40.0f, -5.0f));
 			camera.setUp(glm::vec3(0.0f, 0.0f, -1.0f));
 			camera.setFront(glm::vec3(0.0f, -1.0f, 0.0f));
 			topView = true;
@@ -300,6 +314,8 @@ void processInput(GLFWwindow *window)
 			camera.setFront(glm::vec3(0.0f, 0.0f, -1.0f));
 			topView = false;
 		}
+		keyPress = false;
+	}
 	}
 }
 
@@ -312,7 +328,8 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
-    if (firstMouse)
+    
+	if (firstMouse)
     {
         lastX = xpos;
         lastY = ypos;
@@ -324,8 +341,8 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 
     lastX = xpos;
     lastY = ypos;
-
-    camera.processMouseMovement(xoffset, yoffset);
+	if(!topView)
+    	camera.processMouseMovement(xoffset, yoffset);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
