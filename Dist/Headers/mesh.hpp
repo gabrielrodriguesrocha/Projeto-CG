@@ -54,13 +54,17 @@ namespace Mirage
 
         // Public Member Functions
         void draw();
-        void draw(GLuint shader);
+        void draw(Shader * shader);
+        void draw(Shader * shader, glm::mat4 modelMatrix);
 
 	    
         void setModelMatrix(glm::mat4 m);
         void setMaterialSpecular(glm::vec3 m);
         void setADS(ADS m);
         void setShader (Shader * shader);
+
+        void setSubMeshShader(std::string key, Shader * shader);
+        void setSubMeshModelMatrix(std::string key, glm:: mat4 m);
 
         void activateShader ();
 
@@ -84,7 +88,7 @@ namespace Mirage
                                               aiTextureType type);
 
         // Private Member Containers
-        std::vector<std::unique_ptr<Mesh>> mSubMeshes;
+        std::map<std::string, std::unique_ptr<Mesh>> mSubMeshes;
         std::vector<GLuint> mIndices;
         std::vector<Vertex> mVertices;
         std::map<GLuint, std::string> mTextures;
@@ -101,6 +105,8 @@ namespace Mirage
         Point mCenter;
 
         Shader * mShader;
+
+        bool hasModelMatrix;
 
     };
 };

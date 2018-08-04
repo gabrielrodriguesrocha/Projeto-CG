@@ -1,7 +1,8 @@
 #version 300 es
 
-precision mediump float;
+precision highp float;
 
+in vec2 UV;
 in vec3 eyeNormal;
 in vec4 eyePosition;
 
@@ -10,6 +11,8 @@ uniform mat3 normalMatrix;
 uniform vec3 ambientLightColor, directionalLight, materialSpecular;
 
 uniform float materialAmbient, materialDiffuse, shininess;
+
+uniform sampler2D myTextureSampler;
 
 out vec4 outputColor;
 vec2 iResolution = vec2(1280.0, 800.0);
@@ -53,5 +56,5 @@ void main(void)
     uint texel = (xdist & 255u) ^ (ydist & 255u) ^ z;
     texel %= 16u;
     float c = float(texel) / 16.0;
-    outputColor = vec4((vec3(c) + min(vec3(0.0) + ads(eyePosition, eyeNormal), 1.0)) / 2.0, 1.0);
+    outputColor = vec4(texture( myTextureSampler, UV ).rgb, 1.0f);
 }
