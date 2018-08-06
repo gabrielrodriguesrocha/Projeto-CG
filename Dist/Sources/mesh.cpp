@@ -88,13 +88,17 @@ namespace Mirage
         glBindVertexArray(0);
         glDeleteBuffers(1, & mVertexBuffer);
         glDeleteBuffers(1, & mElementBuffer);
+
+        // Set Submesh Shader To Null
+        this->mShader = NULL;
+        this->hasModelMatrix = false;
     }
 
-    void Mesh::draw(GLuint shader)
+    void Mesh::draw(Shader * shader)
     {
         unsigned int unit = 0, diffuse = 0, specular = 0;
 
-		for (auto &i : mSubMeshes) i->draw(shader);
+		for (auto &i : mSubMeshes) (i.second)->draw(shader);
         for (auto &i : mTextures)
         {   // Set Correct Uniform Names Using Texture Type (Omit ID for 0th Texture)
             std::string uniform = i.second;
@@ -104,15 +108,59 @@ namespace Mirage
             // Bind Correct Textures and Vertex Array Before Drawing
             glActiveTexture(GL_TEXTURE0 + unit);
             glBindTexture(GL_TEXTURE_2D, i.first);
-            glUniform1f(glGetUniformLocation(shader, uniform.c_str()), ++unit);
+            glUniform1f(glGetUniformLocation(shader->get(), uniform.c_str()), ++unit);
 		}
-			glBindVertexArray(mVertexArray);
+            glBindVertexArray(mVertexArray);
             glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+            //glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
 			glBindVertexArray(0);
     }
 
+    // Highly experimental and broken
+    void Mesh::draw(Shader * shader, glm::mat4 modelMatrix)
+    {
+        unsigned int unit = 0, diffuse = 0, specular = 0;
+        Shader *lShader;
+        glm::mat4 lModelMatrix;
+
+		for (auto &i : mSubMeshes) (i.second)->draw(shader, modelMatrix);
+        if (this->mShader) {
+            lShader = mShader;
+            lShader->activate();
+        }
+        else lShader = shader;
+        if (this->hasModelMatrix) {
+            lModelMatrix = modelMatrix;
+            int modelLoc = glGetUniformLocation(lShader->get(), "modelMatrix");
+		    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(this->mModelMatrix));
+        }
+        for (auto &i : mTextures)
+        {   // Set Correct Uniform Names Using Texture Type (Omit ID for 0th Texture)
+            std::string uniform = i.second;
+                 if (i.second == "diffuse")  uniform += (diffuse++  > 0) ? std::to_string(diffuse)  : "";
+            else if (i.second == "specular") uniform += (specular++ > 0) ? std::to_string(specular) : "";
+
+            // Bind Correct Textures and Vertex Array Before Drawing
+            glActiveTexture(GL_TEXTURE0 + unit);
+            glBindTexture(GL_TEXTURE_2D, i.first);
+            glUniform1f(glGetUniformLocation(lShader->get(), uniform.c_str()), ++unit);
+		}
+            glBindVertexArray(mVertexArray);
+            glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+            //glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
+			glBindVertexArray(0);
+        if (this->mShader) {
+            lShader->deactivate();
+            shader->activate();
+        }
+        if (this->hasModelMatrix) {
+            int modelLoc = glGetUniformLocation(lShader->get(), "modelMatrix");
+		    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(lModelMatrix));
+        }
+    }
+
     void Mesh::draw() {
-        Mesh::draw(mShader->get());
+        Mesh::draw(mShader, mModelMatrix);
         //mShader->deactivate();
     }
 
@@ -168,7 +216,7 @@ namespace Mirage
         textures.insert(specular.begin(), specular.end());
 
         // Create New Mesh Node
-        mSubMeshes.push_back(std::unique_ptr<Mesh>(new Mesh(vertices, indices, textures)));
+        mSubMeshes.insert(std::pair<std::string, std::unique_ptr<Mesh>>(mesh->mName.C_Str(), new Mesh(vertices, indices, textures)));
     }
 
     std::map<GLuint, std::string> Mesh::process(std::string const & path,
@@ -230,6 +278,7 @@ namespace Mirage
         mModelMatrix = m;
     }
     glm::mat4 Mesh::getModelMatrix() {
+        this->hasModelMatrix = true;
         return mModelMatrix;
     }
 
@@ -252,6 +301,16 @@ namespace Mirage
 
     Point Mesh::getCenter(){
         return mCenter;
+    }
+
+    void Mesh::setSubMeshShader(std::string key, Shader * shader) {
+        mSubMeshes[key]->setShader(shader);
+        return;
+    }
+
+    void Mesh::setSubMeshModelMatrix(std::string key, glm::mat4 m) {
+        mSubMeshes[key]->setModelMatrix(m);
+        return;
     }
 
 
