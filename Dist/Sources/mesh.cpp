@@ -9,6 +9,7 @@
 
 #include <iostream>
 
+
 // Define Namespace
 namespace Mirage
 {
@@ -86,8 +87,8 @@ namespace Mirage
 
         // Cleanup Buffers
         glBindVertexArray(0);
-        glDeleteBuffers(1, & mVertexBuffer);
-        glDeleteBuffers(1, & mElementBuffer);
+        //glDeleteBuffers(1, & mVertexBuffer);
+        //glDeleteBuffers(1, & mElementBuffer);
 
         // Set Submesh Shader To Null
         this->mShader = NULL;
@@ -111,6 +112,9 @@ namespace Mirage
             glUniform1f(glGetUniformLocation(shader->get(), uniform.c_str()), ++unit);
 		}
             glBindVertexArray(mVertexArray);
+            glEnableVertexAttribArray(0); // Vertex Positions
+            glEnableVertexAttribArray(1); // Vertex Normals
+            glEnableVertexAttribArray(2); // Vertex UVs
             glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
             //glDrawArrays(GL_TRIANGLES, 0, mVertices.size());
 			glBindVertexArray(0);
@@ -160,7 +164,7 @@ namespace Mirage
     }
 
     void Mesh::draw() {
-        Mesh::draw(mShader, mModelMatrix);
+        Mesh::draw(mShader);
         //mShader->deactivate();
     }
 
@@ -175,7 +179,7 @@ namespace Mirage
     void Mesh::parse(std::string const & path, aiMesh const * mesh, aiScene const * scene)
     {
         Point max = {mesh->mVertices[0].x, mesh->mVertices[0].y, mesh->mVertices[0].z};
-        Point min = {mesh->mVertices[0].x, mesh->mVertices[0].y, mesh->mVertices[0].z}; 
+        Point min = {mesh->mVertices[0].x, mesh->mVertices[0].y, mesh->mVertices[0].z};
         // Create Vertex Data from Mesh Node
         std::vector<Vertex> vertices; Vertex vertex;
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -275,10 +279,10 @@ namespace Mirage
     }
 
     void Mesh::setModelMatrix(glm::mat4 m) {
+        this->hasModelMatrix = true;
         mModelMatrix = m;
     }
     glm::mat4 Mesh::getModelMatrix() {
-        this->hasModelMatrix = true;
         return mModelMatrix;
     }
 
