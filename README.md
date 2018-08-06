@@ -8,6 +8,8 @@ Membros da equipe:
 
 A parte de OpenGL deste projeto é baseada (ou descaradamente copiada) do repositório [Glitter](https://github.com/Polytonic/Glitter). Os arquivos referentes a essa parte encontram-se no diretório [Dist](https://github.com/gabrielrodriguesrocha/Projeto-CG/tree/master/Dist).
 
+Para mudar entre as câmeras em primeira pessoa e panorâmica, basta abertar a tecla `F`. Demais informações referentes ao projeto encontram-se na Wiki.
+
 # Reconhecimentos
 
 - Kevin Fung, pelo Glitter;

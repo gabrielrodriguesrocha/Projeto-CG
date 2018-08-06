@@ -40,6 +40,7 @@ int main(int argc, char * argv[]) {
     // Initiate the GLFW library
     glfwInit();
 
+
     /* glfwWindowHint found bellow is used to set a few options for the window:
      * The first and second lines specify the required supported version, 3.3.
      * The third line specifies that we want a context that only supports the
@@ -252,16 +253,16 @@ int main(int argc, char * argv[]) {
     /*
      * Modifications in terms of rotation, scale, translation of each of the original objects
      */
-		glm::mat4 charmanderModelMatrix = glm::translate(glm::mat4(), charmanderPos + glm::vec3(-charmander.getCenter().x, -charmander.getCenter().y, -charmander.getCenter().z + (-5.0f)));
+		glm::mat4 charmanderModelMatrix = glm::translate(glm::mat4(1.0f), charmanderPos + glm::vec3(-charmander.getCenter().x, -charmander.getCenter().y, -charmander.getCenter().z + (-5.0f)));
 		charmanderModelMatrix = glm::rotate(charmanderModelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		charmanderModelMatrix = glm::rotate(charmanderModelMatrix, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
 		charmanderModelMatrix = glm::scale(charmanderModelMatrix, glm::vec3(0.1f, 0.1f, 0.1f));
 
-		glm::mat4 eeveeModelMatrix = glm::translate(glm::mat4(), glm::vec3(-eevee.getCenter().x, -eevee.getCenter().y + abs(5.0f * sin(4.0f * tPikachu)), -eevee.getCenter().z + (-15.0f)));
+		glm::mat4 eeveeModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-eevee.getCenter().x, -eevee.getCenter().y + abs(5.0f * sin(4.0f * tPikachu)), -eevee.getCenter().z + (-15.0f)));
 		eeveeModelMatrix = glm::rotate(eeveeModelMatrix, glm::radians(90.0f), glm::vec3(-0.5f, 0.0f, 0.0f));
 		eeveeModelMatrix = glm::scale(eeveeModelMatrix, glm::vec3(0.1f, 0.1f, 0.1f));
 
-		glm::mat4 mewModelMatrix = glm::translate(glm::mat4(), glm::vec3(-mew.getCenter().x, -mew.getCenter().y, -mew.getCenter().z));
+		glm::mat4 mewModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-mew.getCenter().x, -mew.getCenter().y, -mew.getCenter().z));
 		if (tMew >= 1) {
 			mewModelMatrix = glm::translate(mewModelMatrix, glm::vec3(charmanderPos.x + sin(rMew*M_PI/180)*4, mewPos.y, charmanderPos.z + (cos(rMew*M_PI/180)*4) - 5.0f));
 			rMew -= 1.0f;
@@ -272,23 +273,23 @@ int main(int argc, char * argv[]) {
 		mewModelMatrix = glm::rotate(mewModelMatrix, glm::radians(90.0f), glm::vec3(-0.5f, 0.0f, 0.0f));
 		mewModelMatrix = glm::scale(mewModelMatrix, glm::vec3(0.1f, 0.1f, 0.1f));
 
-		glm::mat4 pikachuModelMatrix = glm::translate(glm::mat4(), pikachuPos + glm::vec3(-pikachu.getCenter().x, -pikachu.getCenter().y, -pikachu.getCenter().z + (-5.0f)));
+		glm::mat4 pikachuModelMatrix = glm::translate(glm::mat4(1.0f), pikachuPos + glm::vec3(-pikachu.getCenter().x, -pikachu.getCenter().y, -pikachu.getCenter().z + (-5.0f)));
 		pikachuModelMatrix = glm::rotate(pikachuModelMatrix, glm::radians(90.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 		pikachuModelMatrix = glm::rotate(pikachuModelMatrix, glm::radians(45.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
 		pikachuModelMatrix = glm::scale(pikachuModelMatrix, glm::vec3(0.1f, 0.1f, 0.1f));
 
-		glm::mat4 superTrainingStageModelMatrix = glm::translate(glm::mat4(), glm::vec3(-superTrainingStage.getCenter().x, -superTrainingStage.getCenter().y, -superTrainingStage.getCenter().z + (-5.0f)));
+		glm::mat4 superTrainingStageModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-superTrainingStage.getCenter().x, -superTrainingStage.getCenter().y, -superTrainingStage.getCenter().z + (-5.0f)));
 		superTrainingStageModelMatrix = glm::scale(superTrainingStageModelMatrix, glm::vec3(3.0f, 3.0f, 3.0f));
 		superTrainingStageModelMatrix = glm::rotate(superTrainingStageModelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		glm::mat4 charizardModelMatrix = glm::translate(glm::mat4(), glm::vec3(charizard.getCenter().x + (12.0f), charizard.getCenter().y + (2.0f), -charizard.getCenter().z + (-5.0f)));
+		glm::mat4 charizardModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(charizard.getCenter().x + (12.0f), charizard.getCenter().y + (2.0f), -charizard.getCenter().z + (-5.0f)));
 		charizardModelMatrix = glm::rotate(charizardModelMatrix, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
 		charizardModelMatrix = glm::rotate(charizardModelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 		charizardModelMatrix = glm::scale(charizardModelMatrix, glm::vec3(0.07f, 0.07f, 0.07f));
 
-		glm::mat4 clefaballModelMatrix = glm::translate(glm::mat4(), glm::vec3(pikachuPos.x, 8.0f + sin(rMew*M_PI/25), -5.0f) + glm::vec3(-clefaball.getCenter().x, -clefaball.getCenter().y, -clefaball.getCenter().z));
+		glm::mat4 clefaballModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(pikachuPos.x, 8.0f + sin(rMew*M_PI/25), -5.0f) + glm::vec3(-clefaball.getCenter().x, -clefaball.getCenter().y, -clefaball.getCenter().z));
 
-		glm::mat4 pokepyramidModelMatrix = glm::translate(glm::mat4(), glm::vec3(-pokepyramid.getCenter().x, -pokepyramid.getCenter().y, -pokepyramid.getCenter().z));
+		glm::mat4 pokepyramidModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-pokepyramid.getCenter().x, -pokepyramid.getCenter().y, -pokepyramid.getCenter().z));
 		pokepyramidModelMatrix = glm::scale(pokepyramidModelMatrix, glm::vec3(5.0f));
 		pokepyramidModelMatrix = glm::translate(pokepyramidModelMatrix, glm::vec3(0.0f, 1.0f, -6.0f));
 
