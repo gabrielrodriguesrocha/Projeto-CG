@@ -40,9 +40,15 @@ int main(int argc, char * argv[]) {
     // Initiate the GLFW library
     glfwInit();
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    /* glfwWindowHint found bellow is used to set a few options for the window:
+     * The first and second lines specify the required supported version, 3.3.
+     * The third line specifies that we want a context that only supports the
+     * new core functionality.
+     */
+	  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	/* Create window with:
 	 * Width (int) = mWidth
@@ -64,19 +70,23 @@ int main(int argc, char * argv[]) {
 
     // tell GLFW to capture our mouse
     glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    
+
     // Load OpenGL
     gladLoadGL();
     fprintf(stderr, "OpenGL %s\n", glGetString(GL_VERSION));
-    
-    // Set the framebuffer size callback of the current window
-	glfwSetFramebufferSizeCallback(mWindow, framebufferSizeCallback);
 
-	glfwSetCursorPosCallback(mWindow, mouseCallback);
+    // Set the framebuffer size callback of the current window
+	  glfwSetFramebufferSizeCallback(mWindow, framebufferSizeCallback);
+
+    // Set the cursor positon of the specified window callback to "mouseCallback"
+	  glfwSetCursorPosCallback(mWindow, mouseCallback);
+
+    // Set the scroll callback of mWindow to "scrollCallback", called when a
+    // scrolling device is used (i.e. mouse wheel).
     glfwSetScrollCallback(mWindow, scrollCallback);
 
 
-	/* 
+	/*
 	 * Build and Compile Shaders
 	 * -------------------------
 	 */
@@ -88,7 +98,7 @@ int main(int argc, char * argv[]) {
 	Mirage::Shader trippyShader;
 	trippyShader.attach("main.vert").attach("trippy.frag");
 	trippyShader.link();
-  
+
 	// Load the mesh (collection of vertices) of each object
 	Mirage::Mesh charmander("Charmander/Charmander.obj",// filename
 							  & mainShader, // shader
@@ -129,8 +139,8 @@ int main(int argc, char * argv[]) {
 						glm::vec3(-0.5f, 5.0f, 4.5f), // directional light
 						glm::vec3(0.2f, 0.2f, 0.2f)); // ambient light colour
 
-	
-	/* 
+
+	/*
 	 * glEnable(GL_DEPTH_TEST); -> Do depth comparisons and update the depth buffer
 	 * glEnable(GL_CULL_FACE); 	-> Cull polygons based on their winding in window coordinates
 	 * glCullFace(GL_BACK);		-> Back-facing polygons are candidates for culling
@@ -139,19 +149,13 @@ int main(int argc, char * argv[]) {
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	
+	// Set the cursor position to x = mWidth/2.0 and y = mHeight/2.0
 	glfwSetCursorPos(mWindow, mWidth/2.0, mHeight/2.0);
-	
-    /* 
-     * Rendering Loop
-	 * --------------
-	 *
-	 * 	glfwWindowShouldClose(mWindow) return the value of "close" flag from the window
-     */
 
 	float tPikachu = 0.0f, tCharmander = 0.0f, tMew = 0.0f, rMew = 0.0f;
 	bool pikachuDone = true, pikachuStart = true, charmanderDone = true, charmanderStart = false;
 
+  // Create the control points used for the bézier curves.
 	glm::vec3 pikachu1P = glm::vec3(6.0f, 0.0f, 0.0f);
 	glm::vec3 pikachu2P = glm::vec3(0.0f, 2.0f, -2.0f);
 	glm::vec3 pikachu3P = glm::vec3(0.0f, 6.0f, 2.0f);
@@ -169,26 +173,36 @@ int main(int argc, char * argv[]) {
 
 	glm::vec3 pikachuPos, charmanderPos, mewPos;
 
+  /*
+   * Rendering Loop
+   * --------------
+   *
+   * 	glfwWindowShouldClose(mWindow) return the value of "close" flag from the window
+   */
+
     while (glfwWindowShouldClose(mWindow) == false) {
 		float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-    	// Process keyboard and mouse input
+    // Process keyboard and mouse input
 		processInput(mWindow);
 
 		// Create viewMatrix from processed input
 		scene.setViewMatrix(camera.getViewMatrix());
 
-        /* 
+        /*
          * glClearColor(1.0f, 1.0f, 1.0f, 1.0f);-> Specify clear values for the color buffers
          * glClear(GL_COLOR_BUFFER_BIT);		-> Clear the buffers enabled for color writing to preset value
          * glClear(GL_DEPTH_BUFFER_BIT);		-> Clear the depth buffer to preset value
          */
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-		glClear(GL_DEPTH_BUFFER_BIT);
+		    glClear(GL_DEPTH_BUFFER_BIT);
 
+    /*
+     * Loop used to modify the "T" variable from the bézier curve equation.
+     */
 		if (pikachuStart) {
 			if (!pikachuDone) {
 				tPikachu += 0.01;
@@ -235,11 +249,14 @@ int main(int argc, char * argv[]) {
 		bezier(charmanderPos, charmander1P, charmander2P, charmander3P, charmander4P, tCharmander);
 		bezier(mewPos, mew1P, mew2P, mew3P, mew4P, tMew);
 
+
+    /*
+     * Modifications in terms of rotation, scale, translation of each of the original objects
+     */
 		glm::mat4 charmanderModelMatrix = glm::translate(glm::mat4(1.0f), charmanderPos + glm::vec3(-charmander.getCenter().x, -charmander.getCenter().y, -charmander.getCenter().z + (-5.0f)));
 		charmanderModelMatrix = glm::rotate(charmanderModelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		charmanderModelMatrix = glm::rotate(charmanderModelMatrix, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
 		charmanderModelMatrix = glm::scale(charmanderModelMatrix, glm::vec3(0.1f, 0.1f, 0.1f));
-		//charmander.setSubMeshModelMatrix("Texture_1", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
 
 		glm::mat4 eeveeModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-eevee.getCenter().x, -eevee.getCenter().y + abs(5.0f * sin(4.0f * tPikachu)), -eevee.getCenter().z + (-15.0f)));
 		eeveeModelMatrix = glm::rotate(eeveeModelMatrix, glm::radians(90.0f), glm::vec3(-0.5f, 0.0f, 0.0f));
@@ -294,7 +311,7 @@ int main(int argc, char * argv[]) {
          * glfwSwapBuffers	-> swap the front and back buffers of the window
          * glfwPollEvents	-> process events that have already been received
          * glfwTerminate	-> destroy all remaining windows and cursors
-         */ 
+         */
         glfwSwapBuffers(mWindow);
         glfwPollEvents();
 		//lastTime = glfwGetTime();
@@ -303,25 +320,35 @@ int main(int argc, char * argv[]) {
 }
 
 
-/* 
+/*
  * processInput(GLFWwindow *window):
- * If the last state reported for the ESC key on this window is 
+ * If the last state reported for the ESC key on this window is
  * "GLFW_PRESS", set the "close" flag to true (terminate the loop)
  */
 void processInput(GLFWwindow *window)
 {
+    // ESC key set to close window
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
-	
-	if(!topView) {	
 
+	if(!topView) {
+
+      /*
+       * Configuration of WASD used to move around the scene
+       */
     	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { camera.processKeyboard(FORWARD, deltaTime); }
     	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { camera.processKeyboard(BACKWARD, deltaTime); }
     	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { camera.processKeyboard(LEFT, deltaTime); }
     	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { camera.processKeyboard(RIGHT, deltaTime); }
 	}
 
+    // Recognition of the F key press used to switch cameras
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) { keyPress = true; }
 
+
+  /*
+   * Switching cameras happen on release of F key
+   * Flags are set to true/false for future identification
+   */
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE && keyPress) {
 	{
 		if (!topView)
@@ -345,14 +372,14 @@ void processInput(GLFWwindow *window)
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
-	// make sure the viewport matches the new window dimensions; note that width and 
+	// make sure the viewport matches the new window dimensions; note that width and
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
 }
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
-    
+
 	if (firstMouse)
     {
         lastX = xpos;
